@@ -226,3 +226,113 @@ class Users(Base, TimeStampMixin, CreationMixin):
         return resp
 
 
+class PartnerLevels(Base, TimeStampMixin, CreationMixin):
+
+    __tablename__ = 'partner_levels'
+    title = Column(UnicodeText, nullable=False)
+    short_description = Column(UnicodeText, nullable=False)
+    description = Column(UnicodeText, nullable=False)
+    value = Column(Float, nullable=False)
+
+    def to_dict(self):
+        resp = super(PartnerLevels, self).to_dict()
+        resp.update(
+            title=self.title,
+            short_description=self.short_description,
+            description=self.description,
+            value=self.value,
+        )
+        return resp
+
+
+class Partners(Base, TimeStampMixin, CreationMixin):
+
+    __tablename__ = 'partners'
+    name = Column(UnicodeText, nullable=False)
+    description = Column(UnicodeText, nullable=False)
+    partner_level_id = Column(ForeignKey('partner_levels.id'), nullable=False)
+    notification_text = Column(UnicodeText, nullable=False)
+    fence_top_left_lat = Column(Float, nullable=False)
+    fence_top_left_lng = Column(Float, nullable=False)
+    fence_bottom_right_lat = Column(Float, nullable=False)
+    fence_bottom_right_lng = Column(Float, nullable=False)
+    
+    def to_dict(self):
+        resp = super(Partners, self).to_dict()
+        resp.update(
+            name=self.name,
+            description=self.description,
+            fence_top_left_lat=self.fence_top_left_lat,
+            fence_top_left_lng=self.fence_top_left_lng,
+            fence_bottom_right_lat=self.fence_bottom_right_lat,
+            fence_bottom_right_lng=self.fence_bottom_right_lng,
+        )
+        return resp
+
+
+class Rides(Base, TimeStampMixin, CreationMixin):
+
+    __tablename__ = 'rides'
+    title = Column(UnicodeText, nullable=False)
+    description = Column(UnicodeText, nullable=False)
+    address_0 = Column(UnicodeText, nullable=False)
+    address_1 = Column(UnicodeText, nullable=False)
+    city = Column(UnicodeText, nullable=False)
+    state = Column(UnicodeText, nullable=False)
+    zipcode = Column(UnicodeText, nullable=False)
+
+    # todo: add get and get_collection overrides to include 
+    #       ride sponsors
+
+    def to_dict(self):
+        resp = super(Rides, self).to_dict()
+        resp.update(
+            title=self.title,
+            description=self.description,
+            address_0=self.address_0,
+            address_1=self.address_1,
+            city=self.city,
+            state=self.state,
+            zipcode=self.zipcode,
+        )
+        return resp
+    
+
+class RideSponsors(Base, TimeStampMixin, CreationMixin):
+
+    __tablename__ = 'ride_sponsors'
+    ride_id = Column(ForeignKey('rides.id'), nullable=False)
+    partner_id = Column(ForeignKey('partners.id'), nullable=False)
+
+    def to_dict(self):
+        resp = super(RideSpondor, self).to_dict()
+        resp.update(
+            
+        )
+
+class Checkins(Base, TimeStampMixin, CreationMixin):
+
+    __tablename__ = 'checkins'
+    race_id = Column(ForeignKey('rides.id'), nullable=False)
+    user_id = Column(ForeignKey('users.id'), nullable=False)
+    accepts_terms = Column(Boolean, nullable=False)    
+
+    @classmethod
+    def get_by_race_id(cls, race_id, start=0, count=50):
+        users = DBSession.query(
+            Users,
+        ).outerjoin(
+            Checkins, Checkins.user_id == Users.id,
+        ).filter(
+            Checkins.race_id == race_id,
+        ).slice(start, start+count).all()
+        return users
+
+    def to_dict(self):
+        resp = super(Checkins, self).to_dict()
+        resp.update(
+            race_id=self.race_id,
+            user_id=self.user_id,
+            accepts_terms=self.accepts_terms,
+        )
+        return resp

@@ -34,7 +34,10 @@ def authenticate(request):
     try:
         token = request.session['token']
     except:
-        pass
+        try:
+            token = request.GET['token']
+        except:
+            pass
     if token:
         user = Users.get_by_token(token)
     return user 

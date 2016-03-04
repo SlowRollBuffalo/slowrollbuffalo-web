@@ -39,5 +39,20 @@ def main(global_config, **settings):
     config.add_route('/api/users', '/api/users')
     config.add_route('/api/users/{id}', '/api/users/{id}')
 
+    config.add_route('/api/partner_levels', '/api/partner_levels')
+    config.add_route('/api/partner_levels/{id}', '/api/partner_levels/{id}')
+
+    config.add_route('/api/partners', '/api/partners')
+    config.add_route('/api/partners/{id}', '/api/partners')
+
+    config.add_route('/api/rides', '/api/rides')
+    config.add_route('/api/rides/{id}', '/api/rides/{id}')
+
+    config.add_route('/api/ride_sponsors', '/api/ride_sponsors')
+    config.add_route('/api/ride_sponsors/{id}', '/api/ride_sponsors/{id}')
+
+    config.add_route('/api/checkins', '/api/checkins')
+    config.add_route('/api/checkins/{id}', '/api/checksin/{id}')
+
     config.scan()
     return config.make_wsgi_app()
