@@ -250,6 +250,11 @@ class Partners(Base, TimeStampMixin, CreationMixin):
     __tablename__ = 'partners'
     name = Column(UnicodeText, nullable=False)
     description = Column(UnicodeText, nullable=False)
+    address_0 = Column(UnicodeText, nullable=False)
+    address_1 = Column(UnicodeText, nullable=False)
+    city = Column(UnicodeText, nullable=False)
+    state = Column(UnicodeText, nullable=False)
+    zipcode = Column(UnicodeText, nullable=False)
     partner_level_id = Column(ForeignKey('partner_levels.id'), nullable=False)
     notification_text = Column(UnicodeText, nullable=False)
     fence_top_left_lat = Column(Float, nullable=False)
@@ -305,9 +310,10 @@ class RideSponsors(Base, TimeStampMixin, CreationMixin):
     partner_id = Column(ForeignKey('partners.id'), nullable=False)
 
     def to_dict(self):
-        resp = super(RideSpondor, self).to_dict()
+        resp = super(RideSponsors, self).to_dict()
         resp.update(
-            
+            ride_id=self.ride_id,
+            partner_id=self.partner_id,
         )
 
 class Checkins(Base, TimeStampMixin, CreationMixin):
