@@ -216,11 +216,12 @@ class PartnerLevelAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'partner_levels': []}
+        resp = {'partner_level': []}
         if self.user and self.user.is_admin:
-            partner_levels = PartnerLevels.get_all()
-            if partner_levels:
-                resp = {'partner_levels': partner_levels.to_dict()}
+            _id = self.request.matchdict['id']
+            partner_level = PartnerLevels.get_by_id(_id)
+            if partner_level:
+                resp = {'partner_level': partner_level.to_dict()}
             else:
                 self.request.response.status = 404
         else:
@@ -233,11 +234,8 @@ class PartnerLevelAPI(object):
         resp = {'partner_level': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                collection = self.payload
-                collection.update(
-                    id = self.request.matchdict['id'],
-                )
-                partner_level = PartnerLevels.update(**collection)
+                _id = self.request.matchdict['id'],
+                partner_level = PartnerLevels.update(_id, **self.payload)
                 if partner_level:
                     resp = {'partner_level': partner_level.to_dict()}
                 else:
@@ -253,8 +251,9 @@ class PartnerLevelAPI(object):
 @view_defaults(route_name='/api/partners', renderer='json')
 class PartnersAPI(object):
 
-    req = ('name', 'description', 'partner_level_id', 'notification_text',
-           'fence_top_left_lat,' 'fence_top_left_lng', 
+    req = ('name', 'description', 'address_0', 'address_1', 'city',
+           'state', 'zipcode', 'partner_level_id', 'notification_text',
+           'fence_top_left_lat', 'fence_top_left_lng', 
            'fence_bottom_right_lat', 'fence_bottom_right_lng')
 
     def __init__(self, request):
@@ -280,12 +279,12 @@ class PartnersAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
-        resp = {'partner_level': None}
+        resp = {'partner': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                partner_level = Partners.add(**self.payload)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
+                partner = Partners.add(**self.payload)
+                if partner:
+                    resp = {'partner': partner.to_dict()}
                 else:
                     # nothing good ...
                     pass
@@ -299,8 +298,9 @@ class PartnersAPI(object):
 @view_defaults(route_name='/api/partners/{id}', renderer='json')
 class PartnerAPI(object):
 
-    req = ('name', 'description', 'partner_level_id', 'notification_text',
-           'fence_top_left_lat,' 'fence_top_left_lng', 
+    req = ('name', 'description', 'address_0', 'address_1', 'city',
+           'state', 'zipcode', 'partner_level_id', 'notification_text',
+           'fence_top_left_lat,' 'fence_top_left_lng',
            'fence_bottom_right_lat', 'fence_bottom_right_lng')
 
     def __init__(self, request):
@@ -312,11 +312,12 @@ class PartnerAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'partners': []}
+        resp = {'partner': None}
         if self.user and self.user.is_admin:
-            partners = Partners.get_all()
-            if partners:
-                resp = {'partners': partners.to_dict()}
+            _id = self.request.matchdict['id']
+            partner = Partners.get_by_id(_id)
+            if partner:
+                resp = {'partner': partners.to_dict()}
             else:
                 self.request.response.status = 404
         else:
@@ -326,16 +327,13 @@ class PartnerAPI(object):
     # [ PUT ]
     @view_config(request_method='PUT')
     def post(self):
-        resp = {'partner_level': None}
+        resp = {'partner': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                collection = self.payload
-                collection.update(
-                    id = self.request.matchdict['id'],
-                )
-                partner_level = Partners.update(**collection)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
+                _id = self.request.matchdict['id'],
+                partner = Partners.update(_id, **self.payload)
+                if partner:
+                    resp = {'partner': partner.to_dict()}
                 else:
                     # nothing good ...
                     pass
@@ -375,12 +373,12 @@ class RidesAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
-        resp = {'partner_level': None}
+        resp = {'ride': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                partner_level = Rides.add(**self.payload)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
+                ride = Rides.add(**self.payload)
+                if ride:
+                    resp = {'ride': ride.to_dict()}
                 else:
                     # nothing good ...
                     pass
@@ -406,11 +404,12 @@ class RideAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'rides': []}
+        resp = {'ride': None}
         if self.user and self.user.is_admin:
-            rides = Rides.get_all()
-            if rides:
-                resp = {'rides': rides.to_dict()}
+            _id = self.request.matchdict['id']
+            ride = Rides.get_by_id(_id)
+            if ride:
+                resp = {'ride': ride.to_dict()}
             else:
                 self.request.response.status = 404
         else:
@@ -420,16 +419,13 @@ class RideAPI(object):
     # [ PUT ]
     @view_config(request_method='PUT')
     def post(self):
-        resp = {'partner_level': None}
+        resp = {'ride': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                collection = self.payload
-                collection.update(
-                    id = self.request.matchdict['id'],
-                )
-                partner_level = Rides.update(**collection)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
+                _id = self.request.matchdict['id']
+                ride = Rides.update(_id, **self.payload)
+                if ride:
+                    resp = {'ride': ride.to_dict()}
                 else:
                     # nothing good ...
                     pass
@@ -468,12 +464,12 @@ class RideSponsorsAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
-        resp = {'partner_level': None}
+        resp = {'ride': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                partner_level = RideSponsors.add(**self.payload)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
+                ride_sponsor = RideSponsors.add(**self.payload)
+                if ride_sponsor:
+                    resp = {'ride_sponsor': ride_sponsor.to_dict()}
                 else:
                     # nothing good ...
                     pass
@@ -500,7 +496,8 @@ class RideSponsorAPI(object):
     def get(self):
         resp = {'ride_sponsors': []}
         if self.user and self.user.is_admin:
-            ride_sponsors = RideSponsors.get_all()
+            _id = self.request.matchdict['id']
+            ride_sponsors = RideSponsors.get_by_id(_id)
             if ride_sponsors:
                 resp = {'ride_sponsors': ride_sponsors.to_dict()}
             else:
@@ -512,16 +509,13 @@ class RideSponsorAPI(object):
     # [ PUT ]
     @view_config(request_method='PUT')
     def post(self):
-        resp = {'partner_level': None}
+        resp = {'ride_sponsor': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                collection = self.payload
-                collection.update(
-                    id = self.request.matchdict['id'],
-                )
-                partner_level = RideSponsors.update(**collection)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
+                _id = self.request.matchdict['id'],
+                ride_sponsor = RideSponsors.update(_id, **self.payload)
+                if ride_sponsor:
+                    resp = {'ride_sponsor': ride_sponsor.to_dict()}
                 else:
                     # nothing good ...
                     pass
@@ -560,12 +554,12 @@ class CheckinsAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
-        resp = {'partner_level': None}
+        resp = {'checkin': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                partner_level = Checkins.add(**self.payload)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
+                checkin = Checkins.add(**self.payload)
+                if checkin:
+                    resp = {'checkin': checkin.to_dict()}
                 else:
                     # nothing good ...
                     pass
@@ -590,7 +584,7 @@ class CheckinAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'checkins': []}
+        resp = {'checkin': None}
         if self.user and self.user.is_admin:
             checkins = Checkins.get_all()
             if checkins:
@@ -604,16 +598,13 @@ class CheckinAPI(object):
     # [ PUT ]
     @view_config(request_method='PUT')
     def post(self):
-        resp = {'partner_level': None}
+        resp = {'checkin': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                collection = self.payload
-                collection.update(
-                    id = self.request.matchdict['id'],
-                )
-                partner_level = Checkins.update(**collection)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
+                _id = self.request.matchdict['id'],
+                checkin = Checkins.update(_id, **self.payload)
+                if checkin:
+                    resp = {'checkin': checkin.to_dict()}
                 else:
                     # nothing good ...
                     pass
