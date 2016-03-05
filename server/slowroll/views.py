@@ -29,6 +29,17 @@ class Index(object):
         return {}
 
 
+@view_defaults(route_name='/admin')
+class Admin(object):
+
+    def __init__(self, request):
+        self.request = request
+
+    @view_config(request_method='GET', renderer='templates/admin.mak')
+    def get(self):
+        return {}
+
+
 @view_defaults(route_name='/login')
 class Login(object):
     

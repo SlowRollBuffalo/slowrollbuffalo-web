@@ -33,6 +33,7 @@ def main(global_config, **settings):
 
     config.add_route('/', '/')
     config.add_route('/login', '/login')
+    config.add_route('/admin', '/admin')
 
     config.add_route('/api/users/login', '/api/users/login')
     config.add_route('/api/users/logout', '/api/users/logout')
