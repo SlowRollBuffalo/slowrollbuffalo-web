@@ -20,7 +20,17 @@
 
     <div class="row">
       <div class="large-12 columns">
-        hi.
+        <div class="top-nav-bar">
+          <div class="right"><a id="logout-link">Logout</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <div class="site-wrapper">
+          hi
+        </div>
       </div>
     </div>
 
@@ -37,7 +47,18 @@
   <script src="static/site.js"></script>
   <script>
     $(document).ready(function() {
+      $('#logout-link').click(function() { do_logout(); })
     });
+
+    function do_logout() {
+      sr.logout(
+        function() {
+          window.location = '/login';
+        },
+        function() {}
+      );
+    }
+
   </script>
 
 </body>

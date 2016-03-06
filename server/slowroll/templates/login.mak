@@ -69,15 +69,23 @@
         email,
         $.sha256(password),
         function() {
-          console.log('login successful.');
           window.location = '/admin';
-         },
-         function() {
-           console.log('invalid login.');
+        },
+        function() {
           $('#login-bad-credentials').show();
-         }
+        }
       );
     }
+
+    function do_logout() {
+      sr.logout(
+        function() {
+          window.location = '/login';
+        },
+        function() {}
+      );
+    }
+    
   </script>
 
 </body>
