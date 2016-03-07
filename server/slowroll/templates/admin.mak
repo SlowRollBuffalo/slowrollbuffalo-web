@@ -5,13 +5,13 @@
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
+ 
+  <link rel="stylesheet" href="static/site.css" type="text/css"/>
+ 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/foundation.min.css" rel="stylesheet" type="text/css" /> 
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css" />
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
-
-  <link rel="stylesheet" href="static/site.css" type="text/css"/>
 
 </head>
 <body>

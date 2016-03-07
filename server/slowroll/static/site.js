@@ -127,6 +127,7 @@ var sr = {
   show_tab: function(tab) {
     sr.hide_all_tabs();
     $('#tab-' + tab).show();
+    sr.models.refresh(tab);
   },
 
   hide_all_tabs: function() {
@@ -136,6 +137,76 @@ var sr = {
   },
 
   models: {
+
+    get: function(model, id, success, failure) {
+      $.ajax({
+        url: '/api/' + model + '/' + id,
+        type: 'GET',
+        success: function(resp) { success(resp); },
+        error: function() { failure(resp); }
+      });
+    },
+
+    get_collection: function(model, start, count, success, failure) {
+      $.ajax({
+        url: '/api/' + model + '?start=' + start + '&count=' + count,
+        type: 'GET',
+        success: function(resp) { success(resp); },
+        failure: function(resp) { failure(resp); }
+      });
+    },
+
+    create: function(model, thing, success, failure) {
+      $.ajax({
+        url: '/api/' + model,
+        type: 'POST',
+        data: JSON.stringify(thing),
+        success: function(resp) { success(resp); },
+        failure: function(resp) { failsure(resp); }
+      });
+    },
+
+    update: function(model, id, thing, success, failure) {
+      $.ajax({
+        url: '/api/' + model + '/' + id,
+        type: 'PUT',
+        data: JSON.stringify(thing),
+        success: function(resp) { success(resp); },
+        failure: function(resp) { failsure(resp); }
+      });
+    },
+
+    remove: function(model, thing, success, failure) {
+      $.ajax({
+        url: '/api/' + model + '/' + id,
+        type: 'DELETE',
+        success: function(resp) { success(resp); },
+        failure: function(resp) { failsure(resp); }
+      });
+    },
+
+    refresh: function(model, start, count) {
+      if ( start == undefined || start == null )
+        start = 0;
+      if ( count == undefined || count == null )
+        count = 0;
+      sr.models.get_collection(
+        model,
+        start,
+        count,
+        function(resp) {
+          console.log('refresh(), success.');
+          console.log(resp);
+          sr.models[model].collection = resp[model];
+          sr.models[model].refresh();
+        },
+        function() {
+          console.log('refresh(), error.');
+          console.log(resp);
+        }
+      );
+    },
+
 
     // Users
 
@@ -149,21 +220,10 @@ var sr = {
         'is_admin': 'checkbox'
       },
 
-      get_user: function(id, success, failure) {
-        get('users', id, success, failure);
-      },
+      collection: [],
+      single: {},
 
-      get_users: function(start, count, success, failure) {
-        get_collection('users', start, count, success, failsure)
-      },
-
-      create_user: function(user, success, failure) {
-        create('users', user, success, failsure);
-      },
-
-      update_user: function(id, user, success, failure) {
-        update('users', id, user, success, failsure);
-      },
+      refresh: function() { },
 
     },
 
@@ -197,21 +257,6 @@ var sr = {
         );
       },
 
-      get: function(id, success, failure) {
-        get('partner_levels', id, success, failsure);
-      },
-
-      get_collecton: function(start, count, success, failure) {
-        get_collection('partner_levels', start, count, success, failure);
-      },
-
-      create: function(partner_level, success, failure) {
-        create('partner_levels', partner_level, success, failure);
-      },
-
-      update: function(id, partner_level, success, failure) {
-        update('partner_levels', id, partner_level, success, failure);
-      }
     },
 
     // Partners
@@ -233,21 +278,6 @@ var sr = {
 
       collection: [],
 
-      get: function(id, success, failure) {
-        get('partners', id, success, failsure);
-      },
-
-      get_collection: function(start, count, success, failure) {
-        get_collection('partners', start, count, success, failure);
-      },
-
-      create: function(partner, success, failure) {
-        create('partners', partner, success, failure);
-      },
-
-      update: function(id, partner, success, failure) {
-        update('partners', id, partner, success, failure);
-      }
     },
 
     // Rides
@@ -267,21 +297,26 @@ var sr = {
       collection: [],
       single: {},
 
-      get: function(id, success, failure) {
-        get('rides', id, success, failure);
-      },
-
-      get_collection: function(start, count, success, failure) {
-        get_collection('rides', start, count, success, failure);
-      },
-
-      create: function(ride, success, failure) {
-        create('rides', ride, success, failsure);
-      },
-
-      update: function(id, ride, success, failure) {
-        update('rides', id, ride, success, failure);
+      refresh: function() {
+        var rides = sr.models['rides'].collection;
+        var html = '';
+        html =  '<table><tbody>';
+        html += '<thead><tr><th style="width: 10%;"></th><th style="width: 30%;">Title</th><th style="width: 30%;">Address</th><th style="width: 30%;">Partner</th></thead>';
+        for(var i=0; i<rides.length; i++) {
+          html += '<tr>';
+          html += '  <td>';
+          html += '    <a id="edit-ride-' + rides[i].id + '" class="fa-table-link"><i class="fa fa-pencil-square-o link-edit"></i></a>';
+          html += '    <a id="edit-ride-' + rides[i].id + '" class="fa-table-link"><i class="fa fa-ban link-cancel"></i></a>';
+          html += '  </td>';
+          html += '  <td>' + rides[i].title + '</td>';
+          html += '  <td>' + rides[i].address_0 + '</td>';
+          html += '  <td></td>';
+          html += '</tr>';
+        }
+        html += '</tbody></table>';
+        $('#rides-list').html(html);
       }
+
     },
 
     // RideSponsors
@@ -295,22 +330,6 @@ var sr = {
 
       collection: [],
       single: {},
-
-      get: function(id, success, failure) {
-        get('ride_sponsors', id, success, failure);
-      },
-
-      get_collection: function(start, count, success, failure) {
-        get_collection('ride_sponsors', start, count, success, failure);
-      },
-
-      create: function(ride_sponsor, success, failure) {
-        create('ride_sponsors', ride_sponsor, success, failure);
-      },
-
-      update: function(id, ride_sponsor, success, failure) {
-        update('ride_sponsor', id, ride_sponsor, success, failure);
-      }
 
     },
 
@@ -326,22 +345,6 @@ var sr = {
 
       collection: [],
       single: {},
-
-      get: function(id, success, failure) {
-        get('checkins', id, success, failure);
-      },
-
-      get_collections: function(start, count, success, failure) {
-        get_collection('checkins', start, count, success, failure);
-      },
-
-      create: function(checkins, success, failure) {
-        create('checkins', checkins, success, failure);
-      },
-
-      update: function(id, checkins, success, failure) {
-        update('checkins', id, checkins, success, failure);
-      }
 
     }
 
@@ -370,7 +373,7 @@ var sr = {
       };
       html += field;
     }
-    html += '<button id="dialog-' + type + '-cancel" class="right" onclick="$(\'#dialog-' + type + '-' + model + '\').foundation(\'reveal\',\'close\');">Cancel</button>';
+    html += '<button id="dialog-' + type + '-cancel" class="right" onclick="$(\'#dialog-' + type + '\').foundation(\'reveal\',\'close\');">Cancel</button>';
     html += '<button id="dialog-' + type + '-submit">Submit</button>';
     return html;
   },
@@ -385,7 +388,8 @@ var sr = {
       for(var key in fields) {
         payload[key] = $('#dialog-' + model + '-' + key).val();
       }
-      sr.models[model].create(
+      sr.models.create(
+        model,
         payload,
         function(resp) {
           console.log('dialog_create(), created model.');
@@ -405,6 +409,7 @@ var sr = {
     $('#dialog-update-submit').on('click', function() {
       console.log('submit()');
       sr.models[model].update(
+        model,
         id,
         data, //payload,
         function(resp) {

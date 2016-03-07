@@ -384,7 +384,7 @@ class RidesAPI(object):
         if self.user and self.user.is_admin:
             rides = Rides.get_all()
             if rides:
-                resp = {'rides': rides.to_dict()}
+                resp = {'rides': [r.to_dict() for r in rides]}
             else:
                 self.request.response.status = 404
         else:
