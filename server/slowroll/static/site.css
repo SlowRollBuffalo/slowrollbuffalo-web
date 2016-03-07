@@ -28,9 +28,52 @@ body {
   height: 2rem;
   margin-top: .4rem;
   padding: .25rem;
-  border-bottom: 1px solid #DDD;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #AAA;
+}
+
+.nav-item {
+  padding-left: .5rem;
+  padding-right: .5rem;
 }
 
 .site-wrapper {
   margin-top: 1rem;
 }
+
+.tabs {
+
+}
+
+.tab {
+  display: none;
+}
+
+/* Tables */
+
+table {
+  margin: 0 0 2em 0;
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table thead {
+  border-bottom: solid 2px #e5e5e5;
+}
+
+table tbody tr:nth-child(2n+1) {
+  background-color: #f8f8f8;
+}
+
+table tbody tr {
+  border: solid 1px #e5e5e5;
+  border-left: 0;
+  border-right: 0;
+}
+
+table td {
+    padding: 0.75em 0.75em;
+}
+
+

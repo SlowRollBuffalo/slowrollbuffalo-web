@@ -1,7 +1,7 @@
 <html>
 <head>
 
-  <title>SlowRoll - Login</title>
+  <title>SlowRoll - Admin Site</title>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,8 +20,12 @@
 
     <div class="row">
       <div class="large-12 columns">
+        <h1>Slow Roll Buffalo</h1>
         <div class="top-nav-bar">
           <div class="right"><a id="logout-link">Logout</a></div>
+          <a class="nav-item" href="#/rides">Rides</a> | 
+          <a class="nav-item" href="#/partners">Partners</a> | 
+          <a class="nav-item" href="#/partner_levels">Partner Levels</a> 
         </div>
       </div>
     </div>
@@ -29,8 +33,43 @@
     <div class="row">
       <div class="large-12 columns">
         <div class="site-wrapper">
-          hi
+          <div class="tabs">
+            <div id="tab-rides" class="tab">
+              <h2>Rides
+              <button class="small right" onclick="sr.dialog_create('rides');">New Ride</button>
+              </h2>
+              <hr></hr>
+              <div class="row"><div class="columns large-12">
+                <div id="rides-list"></div>
+              </div></div>
+            </div>
+            <div id="tab-new-ride" class="tab">
+            </div>
+            <div id="tab-partners" class="tab">
+              <h3>Partners</h3>
+            </div>
+            <div id="tab-new-partner" class="tab">
+            </div>
+            <div id="tab-partner_levels" class="tab">
+              <h3>Partner levels</h3>
+            </div>
+            <div id="tab-new-partner_levels" class="tab">
+            </div>
+            <div id="tab-checkins" class="tab">
+              <h3>Checkins</h3>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+
+    <div class="reveal-modal" id="dialog-new" data-reveal>
+      <div id="dialog-new-inner">
+      </div>
+    </div>
+
+    <div class="reveal-modal" id="dialog-update" data-reveal>
+      <div id="dialog-update-inner">
       </div>
     </div>
 
@@ -39,6 +78,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/js/vendor/jquery.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/js/vendor/modernizr.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/js/foundation.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/js/foundation/foundation.reveal.min.js"></script>
   <script>
     $(document).foundation();
   </script>
@@ -46,8 +86,22 @@
   <script src="static/jquery.sha256.js"></script>
   <script src="static/site.js"></script>
   <script>
+
+    $(document).foundation();
+
     $(document).ready(function() {
+
+      // link logout link
       $('#logout-link').click(function() { do_logout(); })
+
+      // configure hash changes
+      window.onhashchange = sr.service_hash_change;
+
+      // show rides tab
+      window.location.hash = '#/rides';
+      sr.show_tab('rides');
+
+
     });
 
     function do_logout() {

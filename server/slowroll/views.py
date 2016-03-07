@@ -3,6 +3,7 @@ from pyramid.response import Response
 from pyramid.response import FileResponse
 from pyramid.view import view_defaults
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.exc import DBAPIError
 
@@ -34,10 +35,13 @@ class Admin(object):
 
     def __init__(self, request):
         self.request = request
+        self.user = authenticate(request)
 
     @view_config(request_method='GET', renderer='templates/admin.mak')
     def get(self):
-        return {}
+        if self.user and self.user.is_admin:
+            return {}
+        return HTTPFound(location='/login')
 
 
 @view_defaults(route_name='/login')
@@ -118,13 +122,13 @@ class UserLogoutAPI(object):
 @view_defaults(route_name='/api/users', renderer='json')
 class UsersAPI(object):
 
-    post_req = (
+    post_req = {
         'first',
         'last',
         'email',
         'password',
         'is_admin',
-    )
+    }
 
     def __init__(self, request):
         self.request = request
@@ -137,7 +141,10 @@ class UsersAPI(object):
     def get(self):
         resp = {'users': []}
         if self.user and self.user.is_admin:
-            _users = Users.get_all()
+            if self.start == -1:
+                _users = Users.get_paged(self.start, self.count)
+            else:
+                _users = Users.get_paged(self.start, self.count)
             resp = {'users': [u.to_dict() for u in _users]}
         else:
             self.request.response.status = 403
@@ -150,18 +157,21 @@ class UsersAPI(object):
         print(self.payload)
         if self.user and self.user.is_admin:
             if all(r in self.payload for r in self.post_req):
-                user = Users.create_new_user(
-                    first=self.payload['first'],
-                    last=self.payload['last'],
-                    email=self.payload['email'],
-                    password=self.payload['password'],
-                    is_admin=self.payload['is_admin'],
-                )
-                if user:
-                    resp = {'user': user.to_dict()}
-                else:
-                    # something bad happened
-                    pass
+                try:
+                    user = Users.create_new_user(
+                        first=self.payload['first'],
+                        last=self.payload['last'],
+                        email=self.payload['email'],
+                        password=self.payload['password'],
+                        is_admin=self.payload['is_admin'],
+                    )
+                    if user:
+                        resp = {'user': user.to_dict()}
+                    else:
+                        # something bad happened
+                        pass
+                except:
+                    self.request.response.status = 400
             else:
                 self.request.response.status = 400
         else:
@@ -200,12 +210,12 @@ class PartnerLevelsAPI(object):
         resp = {'partner_level': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                partner_level = PartnerLevels.add(**self.payload)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
-                else:
-                    # nothing good ...
-                    pass
+                try:
+                    partner_level = PartnerLevels.add(**self.payload)
+                    if partner_level:
+                        resp = {'partner_level': partner_level.to_dict()}
+                except:
+                    self.request.response.status = 400
             else:
                 self.request.response.status = 400
         else:
