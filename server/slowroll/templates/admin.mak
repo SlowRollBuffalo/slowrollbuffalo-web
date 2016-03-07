@@ -40,7 +40,7 @@
               </h2>
               <hr></hr>
               <div class="row"><div class="columns large-12">
-                <div id="rides-list"></div>
+                <div id="rides-list" class="list"></div>
               </div></div>
             </div>
             <div id="tab-new-ride" class="tab">

@@ -190,6 +190,7 @@ var sr = {
         start = 0;
       if ( count == undefined || count == null )
         count = 0;
+      $('#' + model + '-list').html('<center><img class="loading-gears" src="static/gears.gif"></img></center>');
       sr.models.get_collection(
         model,
         start,
@@ -394,6 +395,8 @@ var sr = {
         function(resp) {
           console.log('dialog_create(), created model.');
           console.log(resp);
+          $('#dialog-new').foundation('reveal','close');
+          sr.models.refresh(model);
         },
         function() {
           consoe.log('dialog_create(), error.');
