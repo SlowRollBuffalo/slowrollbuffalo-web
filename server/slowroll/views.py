@@ -10,14 +10,16 @@ from sqlalchemy.exc import DBAPIError
 from .models import (
     DBSession,
     Users,
-    PartnerLevels,
+    #PartnerLevels,
     Partners,
     Rides,
-    RideSponsors,
+    #RideSponsors,
     Checkins,
 )
 
 from .utils import *
+
+import datetime
 
 @view_defaults(route_name='/')
 class Index(object):
@@ -81,14 +83,14 @@ class UserLoginAPI(object):
     #[ POST ] - perform login
     @view_config(request_method='POST')
     def post(self):
-        resp = {'user': None}
+        resp = {}
         if self.payload and all(r in self.payload for r in self.post_req):
             email = self.payload['email']
             password = self.payload['password']
             user = Users.authenticate(email, password)
             if user:
                 self.request.session['token'] = user.token
-                resp = {'user': user.to_dict()}
+                resp = user.to_dict()
             else:
                 self.request.response.status = 403
         else:
@@ -109,7 +111,7 @@ class UserLogoutAPI(object):
     #[ POST ] - logs the user out
     @view_config(request_method='POST')
     def post(self):
-        resp = {'user': None}
+        resp = {}
         if 'token' in self.request.session:
             token = self.request.session['token']
             if token:
@@ -139,13 +141,13 @@ class UsersAPI(object):
     #[ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'users': []}
+        resp = []
         if self.user and self.user.is_admin:
             if self.start == -1:
                 _users = Users.get_paged(self.start, self.count)
             else:
                 _users = Users.get_paged(self.start, self.count)
-            resp = {'users': [u.to_dict() for u in _users]}
+            resp = [u.to_dict() for u in _users]
         else:
             self.request.response.status = 403
         return resp
@@ -166,7 +168,7 @@ class UsersAPI(object):
                         is_admin=self.payload['is_admin'],
                     )
                     if user:
-                        resp = {'user': user.to_dict()}
+                        resp = user.to_dict()
                     else:
                         # something bad happened
                         pass
@@ -178,7 +180,7 @@ class UsersAPI(object):
             self.request.response.status = 403
         return resp
 
-
+'''
 @view_defaults(route_name='/api/partner_levels', renderer='json')
 class PartnerLevelsAPI(object):
 
@@ -267,13 +269,13 @@ class PartnerLevelAPI(object):
         else:
             self.request.response.status = 403
         return resp
-
+'''
 
 @view_defaults(route_name='/api/partners', renderer='json')
 class PartnersAPI(object):
 
     req = ('name', 'description', 'address_0', 'address_1', 'city',
-           'state', 'zipcode', 'partner_level_id', 'notification_text',
+           'state', 'zipcode', 'notification_text',
            'fence_top_left_lat', 'fence_top_left_lng', 
            'fence_bottom_right_lat', 'fence_bottom_right_lng')
 
@@ -286,11 +288,11 @@ class PartnersAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'partners': []}
+        resp = []
         if self.user and self.user.is_admin:
             partners = Partners.get_all()
             if partners:
-                resp = {'partners': partners.to_dict()}
+                resp = [p.to_dict() for p in partners]
             else:
                 self.request.response.status = 404
         else:
@@ -300,12 +302,12 @@ class PartnersAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
-        resp = {'partner': None}
+        resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
                 partner = Partners.add(**self.payload)
                 if partner:
-                    resp = {'partner': partner.to_dict()}
+                    resp = partner.to_dict()
                 else:
                     # nothing good ...
                     pass
@@ -320,7 +322,7 @@ class PartnersAPI(object):
 class PartnerAPI(object):
 
     req = ('name', 'description', 'address_0', 'address_1', 'city',
-           'state', 'zipcode', 'partner_level_id', 'notification_text',
+           'state', 'zipcode', 'notification_text',
            'fence_top_left_lat,' 'fence_top_left_lng',
            'fence_bottom_right_lat', 'fence_bottom_right_lng')
 
@@ -333,12 +335,12 @@ class PartnerAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'partner': None}
+        resp = {}
         if self.user and self.user.is_admin:
             _id = self.request.matchdict['id']
             partner = Partners.get_by_id(_id)
             if partner:
-                resp = {'partner': partners.to_dict()}
+                resp = partners.to_dict()
             else:
                 self.request.response.status = 404
         else:
@@ -348,13 +350,13 @@ class PartnerAPI(object):
     # [ PUT ]
     @view_config(request_method='PUT')
     def post(self):
-        resp = {'partner': None}
+        resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
                 _id = self.request.matchdict['id'],
                 partner = Partners.update(_id, **self.payload)
                 if partner:
-                    resp = {'partner': partner.to_dict()}
+                    resp = partner.to_dict()
                 else:
                     # nothing good ...
                     pass
@@ -380,13 +382,18 @@ class RidesAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'rides': []}
+        resp = []
         if self.user and self.user.is_admin:
-            rides = Rides.get_all()
-            if rides:
-                resp = {'rides': [r.to_dict() for r in rides]}
-            else:
-                self.request.response.status = 404
+            _rides = Rides.get_paged(self.start, self.count)
+            if _rides:
+                resp = []
+                for ride, sponsor in _rides:
+                    resp.append({
+                        'ride': ride.to_dict(),
+                        'sponsor': sponsor.to_dict(),
+                    })
+            #else:
+            #    self.request.response.status = 404
         else:
             self.request.response.status = 403
         return resp
@@ -394,12 +401,12 @@ class RidesAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
-        resp = {'ride': None}
+        resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
                 ride = Rides.add(**self.payload)
                 if ride:
-                    resp = {'ride': ride.to_dict()}
+                    resp = ride.to_dict()
                 else:
                     # nothing good ...
                     pass
@@ -425,12 +432,12 @@ class RideAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'ride': None}
+        resp = {}
         if self.user and self.user.is_admin:
             _id = self.request.matchdict['id']
             ride = Rides.get_by_id(_id)
             if ride:
-                resp = {'ride': ride.to_dict()}
+                resp = ride.to_dict()
             else:
                 self.request.response.status = 404
         else:
@@ -440,13 +447,13 @@ class RideAPI(object):
     # [ PUT ]
     @view_config(request_method='PUT')
     def post(self):
-        resp = {'ride': None}
+        resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
                 _id = self.request.matchdict['id']
                 ride = Rides.update(_id, **self.payload)
                 if ride:
-                    resp = {'ride': ride.to_dict()}
+                    resp = ride.to_dict()
                 else:
                     # nothing good ...
                     pass
@@ -456,7 +463,7 @@ class RideAPI(object):
             self.request.response.status = 403
         return resp
 
-
+'''
 @view_defaults(route_name='/api/ride_sponsors', renderer='json')
 class RideSponsorsAPI(object):
 
@@ -545,7 +552,7 @@ class RideSponsorAPI(object):
         else:
             self.request.response.status = 403
         return resp
-
+'''
 
 @view_defaults(route_name='/api/checkins', renderer='json')
 class CheckinsAPI(object):
@@ -561,11 +568,11 @@ class CheckinsAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'checkins': []}
+        resp = []
         if self.user and self.user.is_admin:
             checkins = Checkins.get_all()
             if checkins:
-                resp = {'checkins': checkins.to_dict()}
+                resp = [c.to_dict() for c in checkins]
             else:
                 self.request.response.status = 404
         else:
@@ -575,12 +582,12 @@ class CheckinsAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
-        resp = {'checkin': None}
+        resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
                 checkin = Checkins.add(**self.payload)
                 if checkin:
-                    resp = {'checkin': checkin.to_dict()}
+                    resp = checkin.to_dict()
                 else:
                     # nothing good ...
                     pass
@@ -605,11 +612,12 @@ class CheckinAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        resp = {'checkin': None}
+        resp = {}
         if self.user and self.user.is_admin:
-            checkins = Checkins.get_all()
+            _id = self.request.matchdict['id']
+            checkins = Checkins.get_by_id(_id)
             if checkins:
-                resp = {'checkins': checkins.to_dict()}
+                resp = checkins.to_dict()
             else:
                 self.request.response.status = 404
         else:

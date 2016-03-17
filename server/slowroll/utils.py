@@ -1,4 +1,6 @@
 
+import datetime
+
 from .models import (
     Users,
 )
@@ -8,8 +10,19 @@ upload_dir = './uploads'
 def get_payload(request):
     try:
         payload = request.json_body
+        for key in payload:
+            print(key, payload[key])
+            if '_datetime' in key:
+                dt = datetime.datetime.strptime(payload[key], '%m/%d/%Y')
+                print('dt!')
+                print(dt)
+                print('\n')
+                payload[key] = dt
     except:
         payload = None
+    print('\n')
+    print(payload)
+    print('\n')
     return payload
 
 
@@ -20,8 +33,9 @@ def build_paging(request):
         try:
             start = int(float(request.GET['start']))
             count = int(float(request.GET['count']))
-            if count > 50:
-                count = 50
+            # prevent too much server thrashing ...
+            if count > 1000:
+                count = 1000
         except:
             start = 0
             count = 50

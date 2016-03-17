@@ -226,6 +226,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
         return resp
 
 
+'''
 class PartnerLevels(Base, TimeStampMixin, CreationMixin):
 
     __tablename__ = 'partner_levels'
@@ -243,7 +244,7 @@ class PartnerLevels(Base, TimeStampMixin, CreationMixin):
             value=self.value,
         )
         return resp
-
+'''
 
 class Partners(Base, TimeStampMixin, CreationMixin):
 
@@ -255,7 +256,7 @@ class Partners(Base, TimeStampMixin, CreationMixin):
     city = Column(UnicodeText, nullable=False)
     state = Column(UnicodeText, nullable=False)
     zipcode = Column(UnicodeText, nullable=False)
-    partner_level_id = Column(ForeignKey('partner_levels.id'), nullable=False)
+    #partner_level_id = Column(ForeignKey('partner_levels.id'), nullable=False)
     notification_text = Column(UnicodeText, nullable=False)
     fence_top_left_lat = Column(Float, nullable=False)
     fence_top_left_lng = Column(Float, nullable=False)
@@ -267,6 +268,12 @@ class Partners(Base, TimeStampMixin, CreationMixin):
         resp.update(
             name=self.name,
             description=self.description,
+            address_0=self.address_0,
+            address_1=self.address_1,
+            city=self.city,
+            state=self.state,
+            zipcode=self.zipcode,
+            notification_text=self.notification_text,
             fence_top_left_lat=self.fence_top_left_lat,
             fence_top_left_lng=self.fence_top_left_lng,
             fence_bottom_right_lat=self.fence_bottom_right_lat,
@@ -280,20 +287,31 @@ class Rides(Base, TimeStampMixin, CreationMixin):
     __tablename__ = 'rides'
     title = Column(UnicodeText, nullable=False)
     description = Column(UnicodeText, nullable=False)
+    ride_datetime = Column(Date, nullable=False)
     address_0 = Column(UnicodeText, nullable=False)
     address_1 = Column(UnicodeText, nullable=False)
     city = Column(UnicodeText, nullable=False)
     state = Column(UnicodeText, nullable=False)
     zipcode = Column(UnicodeText, nullable=False)
+    sponsor_id = Column(ForeignKey('partners.id'), nullable=False)
 
-    # todo: add get and get_collection overrides to include 
-    #       ride sponsors
+    # over ride to support partner/sponsor join
+    @classmethod
+    def get_paged(cls, start, count):
+        rides = DBSession.query(
+            Rides,
+            Partners,
+        ).outerjoin(
+            Partners, Partners.id == Rides.sponsor_id,
+        ).slice(start, start+count).all()
+        return rides
 
     def to_dict(self):
         resp = super(Rides, self).to_dict()
         resp.update(
             title=self.title,
             description=self.description,
+            ride_datetime=str(self.ride_datetime),
             address_0=self.address_0,
             address_1=self.address_1,
             city=self.city,
@@ -303,18 +321,19 @@ class Rides(Base, TimeStampMixin, CreationMixin):
         return resp
     
 
-class RideSponsors(Base, TimeStampMixin, CreationMixin):
-
-    __tablename__ = 'ride_sponsors'
-    ride_id = Column(ForeignKey('rides.id'), nullable=False)
-    partner_id = Column(ForeignKey('partners.id'), nullable=False)
-
-    def to_dict(self):
-        resp = super(RideSponsors, self).to_dict()
-        resp.update(
-            ride_id=self.ride_id,
-            partner_id=self.partner_id,
-        )
+#class RideSponsors(Base, TimeStampMixin, CreationMixin):
+#
+#    __tablename__ = 'ride_sponsors'
+#    ride_id = Column(ForeignKey('rides.id'), nullable=False)
+#    partner_id = Column(ForeignKey('partners.id'), nullable=False)
+#
+#    def to_dict(self):
+#        resp = super(RideSponsors, self).to_dict()
+#        resp.update(
+#            ride_id=self.ride_id,
+#            partner_id=self.partner_id,
+#        )
+#
 
 class Checkins(Base, TimeStampMixin, CreationMixin):
 

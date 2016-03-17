@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
 
-  <link rel="stylesheet" href="static/site.css" type="text/css"/>
+  <link rel="stylesheet" href="static/css/login.css" type="text/css"/>
 
 </head>
 <body>
@@ -40,11 +40,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/js/vendor/modernizr.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/js/foundation.min.js"></script>
   <script>
-    $(document).foundation();
+    //$(document).foundation();
   </script>
 
   <script src="static/jquery.sha256.js"></script>
-  <script src="static/site.js"></script>
+  <script src="static/js/site.js"></script>
   <script>
     $(document).ready(function() {
       $('#login-submit').click(function() {
@@ -68,7 +68,7 @@
       sr.login(
         email,
         $.sha256(password),
-        function() {
+        function(resp) {
           window.location = '/admin';
         },
         function() {

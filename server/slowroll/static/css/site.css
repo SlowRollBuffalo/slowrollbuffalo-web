@@ -1,0 +1,131 @@
+
+a {
+	cursor: pointer;
+}
+
+label {
+	margin-bottom: 0em !important;
+}
+
+.fa {
+	margin-right: .75rem;
+	margin-left: .75rem;
+}
+
+.edit-link {
+	color: rgba(102,0,204,.65);
+}
+
+.new-link {
+	color: #80e899;
+}
+
+.page-nav {
+	text-align: center;
+ 	margin-bottom: 1.25rem;
+}
+
+.page-nav-link-wrapper {
+	padding-left: 2rem;
+  	padding-right: 2rem;
+  	display: inline-block;
+}
+
+.page-nav-link {
+	cursor: pointer;
+  	font-size: 150%;
+}
+
+.admin-banner {
+	padding: 4em 0 14em 0 !important
+}
+
+.page {
+	display: none;
+}
+
+button {
+	background: #8099e8;
+	border: none;
+	padding: 1rem;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.create-button {
+	background: #80e899;
+}
+
+.cancel-button {
+	background: #e89980;
+}
+
+.button-holder {
+	width: 100%;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+/*.reveal-modal {
+	width: 800px !important;
+	margin-left: -400px !important;
+}*/
+
+#modal-new-ride {
+	text-align: left;
+}
+
+#modal-new-ride input {
+  	/*padding: 0.2em 1em;*/
+	width: 100%;
+	height: 2em;
+}
+
+#modal-new-ride textarea {
+	padding: 0.2em 1em !important;
+}
+
+.ui-datepicker {
+	background: #FEFEFE;
+	border: 1px solid #999;
+	border-radius: 6px;
+	padding: 4px;
+}
+
+.ui-datepicker table {
+	margin: 0;
+}
+
+.ui-datepicker tr {
+	background: #FEFEFE !important;
+}
+
+.ui-datepicker th {
+	padding: 0 0.5em 0.5em 0.5em;
+}
+
+.ui-datepicker td {
+	padding: 0.1em;
+	padding: 0.1em;
+	text-align: center;
+}
+
+.ui-datepicker-header {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.ui-datepicker-next {
+	float: right;
+
+}
+
+.ui-datepicker-title {
+	text-align: center;
+}
