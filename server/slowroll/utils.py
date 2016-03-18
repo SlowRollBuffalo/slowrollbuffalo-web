@@ -55,6 +55,3 @@ def authenticate(request):
     if token:
         user = Users.get_by_token(token)
     return user 
-
-
-

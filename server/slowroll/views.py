@@ -67,6 +67,7 @@ class UserLoginAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         start, count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -104,6 +105,7 @@ class UserLogoutAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -375,6 +377,7 @@ class RidesAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
