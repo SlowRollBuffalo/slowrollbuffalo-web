@@ -2263,7 +2263,7 @@ body.landing #page-wrapper {
 #banner {
   background-attachment: scroll,							fixed;
   background-color: #666;
-  background-image: url("images/bikes.jpg"), url("../../images/banner.jpg");
+  background-image: url("/static/images/bikes.jpg");
   background-position: 0 -410px;
   background-repeat: repeat,							no-repeat;
   background-size: auto,							cover;

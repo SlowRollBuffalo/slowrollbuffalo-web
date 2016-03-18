@@ -1,6 +1,9 @@
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 
+from pyramid.request import Request
+from pyramid.request import Response
+
 from pyramid.session import SignedCookieSessionFactory
 
 from .models import (
@@ -8,6 +11,18 @@ from .models import (
     Base,
     )
 
+def request_factory(environ):
+    request = Request(environ)
+    if request.is_xhr:
+        request.response = Response()
+        request.response.headerlist = []
+        request.response.headerlist.extend(
+            (
+                ('Access-Control-Allow-Origin', '*'),
+                #('Content-Type', 'application/json')
+            )
+        )
+    return request
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -30,6 +45,9 @@ def main(global_config, **settings):
         secure=secure,
     )
     config.set_session_factory(my_session_factory)
+
+    # enables cors so the app can do AJAX calls.
+    config.set_request_factory(request_factory)
 
     config.add_route('/', '/')
     config.add_route('/login', '/login')
