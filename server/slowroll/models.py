@@ -91,6 +91,7 @@ class CreationMixin():
         thing = DBSession.query(cls).filter(cls.id==id).first() #cls.get_by_id(id)
         if thing is not None:
             for k in kwargs:
+                print(k)
                 if k in keys:
                     setattr(thing, k, kwargs[k])
             thing.modified_datetime = datetime.datetime.now()
@@ -123,12 +124,16 @@ class Users(Base, TimeStampMixin, CreationMixin):
     email = Column(UnicodeText, nullable=False)
     pass_salt = Column(UnicodeText, nullable=False)
     pass_hash = Column(UnicodeText, nullable=False)
+    validation_token = Column(UnicodeText, nullable=False)
+    validated = Column(Boolean, nullable=False)
     token = Column(UnicodeText, nullable=True)
     token_expire_datetime = Column(DateTime, nullable=True)
 
     @classmethod
-    def create_new_user(cls, first, last, email, password, is_admin):
-        user = None
+    def create_new_user(cls, first, last, email, password, is_admin=False):
+        user = Users.get_by_email(email)
+        if user:
+            return None
         salt_bytes = hashlib.sha256(str(uuid4()).encode('utf-8')).hexdigest()
         pass_bytes = hashlib.sha256(password.encode('utf-8')).hexdigest()
         pass_val = pass_bytes + salt_bytes
@@ -140,11 +145,26 @@ class Users(Base, TimeStampMixin, CreationMixin):
             email = email,
             pass_salt = salt_bytes,
             pass_hash = pass_hash,
+            validation_token = hashlib.sha256(str(uuid4()).encode('utf-8')).hexdigest(),
+            validated = False,
             token = None,
             token_expire_datetime = None,
         )
         return user
 
+    @classmethod
+    def validate(cls, validation_token):
+        user = DBSession.query(
+            Users,
+        ).filter(
+            Users.validation_token == validation_token,
+        ).first()
+        if user:
+            Users.update_by_id(
+                user.id,
+                validated = True
+            )
+        return user
 
     @classmethod
     def get_by_token(cls, token):

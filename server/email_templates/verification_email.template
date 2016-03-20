@@ -1,0 +1,17 @@
+<h3>Hello {{First}} {{Last}}!  Welcome to SlowRoll Buffalo!</h3>
+
+<p>
+    You're receiving this email because your email address was entered into 
+    the SlowRoll Buffalo mobile app as part of the new user registration.
+</p>
+<p>
+    Click this link to validate your registration, and start using the SlowRoll
+    Buffalo App!
+</p>
+<span>
+    <a style="padding-left: 2rem;" href="http://slowrollbuffalo.mycodespace.net/validate?validation_token={{validation_token}}">http://slowrollbuffalo.mycodespace.net/validate?validation_token={{validation_token}}</a>
+</span>
+
+<p>
+    If you feel that you have received this email in error, it is safe to ignore it.
+</p>

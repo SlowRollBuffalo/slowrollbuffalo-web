@@ -3,7 +3,7 @@ import requests
 import json
 import hashlib
 
-base_url = 'http://localhost:6543'
+base_url = 'http://localhost:6577'
 
 def build_url(model, token, _id=False):
     if _id:

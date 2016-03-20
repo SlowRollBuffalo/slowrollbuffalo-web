@@ -127,6 +127,81 @@ class UserLogoutAPI(object):
         return resp    
 
 
+@view_defaults(route_name='/api/users/register', renderer='json')
+class RegisterAPI(object):
+
+    post_req = (
+        'first',
+        'last',
+        'email',
+        'password',
+    )
+
+    def __init__(self, request):
+        self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+        start, count = build_paging(request)
+        self.user = authenticate(request)
+        self.payload = get_payload(request)
+
+    #[ POST ] - perform login
+    @view_config(request_method='POST')
+    def post(self):
+        resp = {}
+        if self.payload and all(r in self.payload for r in self.post_req):
+            first = self.payload['first']
+            last = self.payload['last']
+            email = self.payload['email']
+            password = self.payload['password']
+            user = Users.create_new_user(first, last, email, password)
+            if user:
+
+                Users.update_by_id(
+                    user.id,
+                    validated=True
+                )
+
+                #config = {
+                #    'notification_email_server': '',
+                #    'notification_email_server_port': 0,
+                #    'notification_email_address': '',
+                #    'notification_email_password': '',
+                #}
+
+                # send the registration email
+                #send_registration_email(config, user)
+
+                resp = user.to_dict()
+            else:
+                resp = {'error': 1} # already registered
+                self.request.response.status = 403
+        else:
+            self.request.response.status = 400
+        #print('\n')
+        return resp
+
+
+@view_defaults(route_name='/validate')
+class Validate(object):
+
+    def __init__(self, request):
+        self.request = request
+
+    @view_config(request_method='GET', renderer='templates/validate.mak')
+    def get(self):
+        if 'validation_token' in self.request.GET:
+            validation_token = self.request.GET['validation_token']
+            if validation_token:
+                user = Users.validate(validation_token)
+                if user:
+                    # validated!
+                    return {}
+                #else:
+                #    # invalid token, or error ...
+                #    return HTTPFound(location='/')
+        return HTTPFound(location='/')
+
+
 @view_defaults(route_name='/api/users', renderer='json')
 class UsersAPI(object):
 
@@ -396,7 +471,7 @@ class RidesAPI(object):
     @view_config(request_method='GET')
     def get(self):
         resp = []
-        if self.user and self.user.is_admin:
+        if self.user:
             _rides = Rides.get_paged(self.start, self.count)
             if _rides:
                 resp = []
