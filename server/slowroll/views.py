@@ -71,7 +71,6 @@ class UserLoginAPI(object):
         start, count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
-        print(self.payload)
 
     #[ GET ] - check if logged in
     @view_config(request_method='GET')
@@ -85,17 +84,22 @@ class UserLoginAPI(object):
     @view_config(request_method='POST')
     def post(self):
         resp = {}
+        #print('\n')
+        #print('UserLoginAPI.GET()')
         if self.payload and all(r in self.payload for r in self.post_req):
             email = self.payload['email']
             password = self.payload['password']
             user = Users.authenticate(email, password)
             if user:
+                #print('User valid.')
                 self.request.session['token'] = user.token
                 resp = user.to_dict()
             else:
+                #print('User was none.')
                 self.request.response.status = 403
         else:
             self.request.response.status = 400
+        #print('\n')
         return resp
 
 
@@ -136,6 +140,7 @@ class UsersAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -158,7 +163,6 @@ class UsersAPI(object):
     @view_config(request_method='POST')
     def post(self):
         resp = {'user': None}
-        print(self.payload)
         if self.user and self.user.is_admin:
             if all(r in self.payload for r in self.post_req):
                 try:
@@ -283,6 +287,7 @@ class PartnersAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -291,14 +296,18 @@ class PartnersAPI(object):
     @view_config(request_method='GET')
     def get(self):
         resp = []
-        if self.user and self.user.is_admin:
+        print('\n')
+        print('PartnersAPI.GET()')
+        print(self.user)
+        if self.user:
             partners = Partners.get_all()
             if partners:
                 resp = [p.to_dict() for p in partners]
-            else:
-                self.request.response.status = 404
+            #else:
+            #    self.request.response.status = 404
         else:
             self.request.response.status = 403
+        print('\n')
         return resp
 
     # [ POST ]
@@ -330,6 +339,7 @@ class PartnerAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -428,6 +438,7 @@ class RideAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -564,6 +575,7 @@ class CheckinsAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -608,6 +620,7 @@ class CheckinAPI(object):
 
     def __init__(self, request):
         self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)

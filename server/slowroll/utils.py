@@ -11,18 +11,11 @@ def get_payload(request):
     try:
         payload = request.json_body
         for key in payload:
-            print(key, payload[key])
             if '_datetime' in key:
                 dt = datetime.datetime.strptime(payload[key], '%m/%d/%Y')
-                print('dt!')
-                print(dt)
-                print('\n')
                 payload[key] = dt
     except:
         payload = None
-    print('\n')
-    print(payload)
-    print('\n')
     return payload
 
 
