@@ -393,7 +393,7 @@ class Settings(Base, TimeStampMixin, CreationMixin):
                 return int(setting.value)
             elif setting.content_type == 'float':
                 return float(setting.value)
-            else
+            else:
                 return setting.value
         return None
 
@@ -402,11 +402,11 @@ class Settings(Base, TimeStampMixin, CreationMixin):
         setting  = Settings.get_by_name(name)
         if setting:
             setting = Settings.update_by_id(
-                settings.id,
-                settings.vlaue = value,
-                settings.content_type = content_type,
+                id,
+                value = value,
+                content_type = content_type,
             )
-        else
+        else:
             # setting doesn't exist, need to create it
             setting = Settings.add(
                 name=name,

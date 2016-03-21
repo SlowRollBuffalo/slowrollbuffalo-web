@@ -57,6 +57,7 @@ def main(global_config, **settings):
     config.add_route('/api/users/login', '/api/users/login')
     config.add_route('/api/users/logout', '/api/users/logout')
     config.add_route('/api/users/register', '/api/users/register')
+    config.add_route('/api/users/legal', '/api/users/legal')
     config.add_route('/api/users', '/api/users')
     config.add_route('/api/users/{id}', '/api/users/{id}')
 
@@ -74,6 +75,8 @@ def main(global_config, **settings):
 
     config.add_route('/api/checkins', '/api/checkins')
     config.add_route('/api/checkins/{id}', '/api/checksin/{id}')
+
+    
 
     config.scan()
     return config.make_wsgi_app()

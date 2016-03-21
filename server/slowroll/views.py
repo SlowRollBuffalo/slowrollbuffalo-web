@@ -15,6 +15,7 @@ from .models import (
     Rides,
     #RideSponsors,
     Checkins,
+    Settings,
 )
 
 from .utils import *
@@ -66,8 +67,7 @@ class UserLoginAPI(object):
     )
 
     def __init__(self, request):
-        self.request = request
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+        self.request = build_request(request)
         start, count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -181,6 +181,21 @@ class RegisterAPI(object):
         return resp
 
 
+@view_defaults(route_name='/api/users/legal')
+class Legal(object):
+
+    def __init__(self, request):
+        self.request = request
+        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+        self.user = authenticate(request)
+        self.payload = get_payload(request)
+
+    @view_config(request_method='GET', renderer='json')
+    def get(self):
+        legal_notice = Settings.get_setting_value('legal_notice')
+        resp = {'legal_notice': legal_notice}
+        return resp 
+
 @view_defaults(route_name='/validate')
 class Validate(object):
 
@@ -214,8 +229,7 @@ class UsersAPI(object):
     }
 
     def __init__(self, request):
-        self.request = request
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+        self.request = build_request(request)
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -261,96 +275,6 @@ class UsersAPI(object):
             self.request.response.status = 403
         return resp
 
-'''
-@view_defaults(route_name='/api/partner_levels', renderer='json')
-class PartnerLevelsAPI(object):
-
-    req = ('title', 'short_description', 'description', 'value')
-
-    def __init__(self, request):
-        self.request = request
-        self.start, self.count = build_paging(request)
-        self.user = authenticate(request)
-        self.payload = get_payload(request) 
-
-    # [ GET ]
-    @view_config(request_method='GET')
-    def get(self):
-        resp = {'partner_levels': []}
-        if self.user and self.user.is_admin:
-            partner_levels = PartnerLevels.get_all()
-            if partner_levels:
-                resp = {'partner_levels': partner_levels.to_dict()}
-            else:
-                self.request.response.status = 404
-        else:
-            self.request.response.status = 403
-        return resp
-
-    # [ POST ]
-    @view_config(request_method='POST')
-    def post(self):
-        resp = {'partner_level': None}
-        if self.user and self.user.is_admin:
-            if self.payload and all(r in self.payload for r in self.req):
-                try:
-                    partner_level = PartnerLevels.add(**self.payload)
-                    if partner_level:
-                        resp = {'partner_level': partner_level.to_dict()}
-                except:
-                    self.request.response.status = 400
-            else:
-                self.request.response.status = 400
-        else:
-            self.request.response.status = 403
-        return resp
-
-
-@view_defaults(route_name='/api/partner_levels/{id}', renderer='json')
-class PartnerLevelAPI(object):
-
-    req = ('title', 'short_description', 'description', 'value')
-
-    def __init__(self, request):
-        self.request = request
-        self.start, self.count = build_paging(request)
-        self.user = authenticate(request)
-        self.payload = get_payload(request)
-
-    # [ GET ]
-    @view_config(request_method='GET')
-    def get(self):
-        resp = {'partner_level': []}
-        if self.user and self.user.is_admin:
-            _id = self.request.matchdict['id']
-            partner_level = PartnerLevels.get_by_id(_id)
-            if partner_level:
-                resp = {'partner_level': partner_level.to_dict()}
-            else:
-                self.request.response.status = 404
-        else:
-            self.request.response.status = 403
-        return resp
-
-    # [ PUT ]
-    @view_config(request_method='PUT')
-    def post(self):
-        resp = {'partner_level': None}
-        if self.user and self.user.is_admin:
-            if self.payload and all(r in self.payload for r in self.req):
-                _id = self.request.matchdict['id'],
-                partner_level = PartnerLevels.update(_id, **self.payload)
-                if partner_level:
-                    resp = {'partner_level': partner_level.to_dict()}
-                else:
-                    # nothing good ...
-                    pass
-            else:
-                self.request.response.status = 400
-        else:
-            self.request.response.status = 403
-        return resp
-'''
 
 @view_defaults(route_name='/api/partners', renderer='json')
 class PartnersAPI(object):
@@ -361,8 +285,7 @@ class PartnersAPI(object):
            'fence_bottom_right_lat', 'fence_bottom_right_lng')
 
     def __init__(self, request):
-        self.request = request
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+        self.request = build_request(request)
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -414,7 +337,6 @@ class PartnerAPI(object):
 
     def __init__(self, request):
         self.request = request
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -461,7 +383,7 @@ class RidesAPI(object):
            'city', 'state', 'zipcode')
 
     def __init__(self, request):
-        self.request = request
+        self.request = build_request(request)
         self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
@@ -513,7 +435,6 @@ class RideAPI(object):
 
     def __init__(self, request):
         self.request = request
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -552,96 +473,6 @@ class RideAPI(object):
             self.request.response.status = 403
         return resp
 
-'''
-@view_defaults(route_name='/api/ride_sponsors', renderer='json')
-class RideSponsorsAPI(object):
-
-    req = ('ride_id', 'partner_id') 
-
-    def __init__(self, request):
-        self.request = request
-        self.start, self.count = build_paging(request)
-        self.user = authenticate(request)
-        self.payload = get_payload(request)
-
-    # [ GET ]
-    @view_config(request_method='GET')
-    def get(self):
-        resp = {'ride_sponsors': []}
-        if self.user and self.user.is_admin:
-            ride_sponsors = RideSponsors.get_all()
-            if ride_sponsors:
-                resp = {'ride_sponsors': ride_sponsors.to_dict()}
-            else:
-                self.request.response.status = 404
-        else:
-            self.request.response.status = 403
-        return resp
-
-    # [ POST ]
-    @view_config(request_method='POST')
-    def post(self):
-        resp = {'ride': None}
-        if self.user and self.user.is_admin:
-            if self.payload and all(r in self.payload for r in self.req):
-                ride_sponsor = RideSponsors.add(**self.payload)
-                if ride_sponsor:
-                    resp = {'ride_sponsor': ride_sponsor.to_dict()}
-                else:
-                    # nothing good ...
-                    pass
-            else:
-                self.request.response.status = 400
-        else:
-            self.request.response.status = 403
-        return resp
-
-
-@view_defaults(route_name='/api/ride_sponsors/{id}', renderer='json')
-class RideSponsorAPI(object):
-
-    req = ('ride_id', 'partner_id')
-
-    def __init__(self, request):
-        self.request = request
-        self.start, self.count = build_paging(request)
-        self.user = authenticate(request)
-        self.payload = get_payload(request)
-
-    # [ GET ]
-    @view_config(request_method='GET')
-    def get(self):
-        resp = {'ride_sponsors': []}
-        if self.user and self.user.is_admin:
-            _id = self.request.matchdict['id']
-            ride_sponsors = RideSponsors.get_by_id(_id)
-            if ride_sponsors:
-                resp = {'ride_sponsors': ride_sponsors.to_dict()}
-            else:
-                self.request.response.status = 404
-        else:
-            self.request.response.status = 403
-        return resp
-
-    # [ PUT ]
-    @view_config(request_method='PUT')
-    def post(self):
-        resp = {'ride_sponsor': None}
-        if self.user and self.user.is_admin:
-            if self.payload and all(r in self.payload for r in self.req):
-                _id = self.request.matchdict['id'],
-                ride_sponsor = RideSponsors.update(_id, **self.payload)
-                if ride_sponsor:
-                    resp = {'ride_sponsor': ride_sponsor.to_dict()}
-                else:
-                    # nothing good ...
-                    pass
-            else:
-                self.request.response.status = 400
-        else:
-            self.request.response.status = 403
-        return resp
-'''
 
 @view_defaults(route_name='/api/checkins', renderer='json')
 class CheckinsAPI(object):
@@ -649,8 +480,7 @@ class CheckinsAPI(object):
     req = ('race_id', 'user_id', 'accepts_terms')
 
     def __init__(self, request):
-        self.request = request
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+        self.request = build_request(request)
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
@@ -695,7 +525,6 @@ class CheckinAPI(object):
 
     def __init__(self, request):
         self.request = request
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
