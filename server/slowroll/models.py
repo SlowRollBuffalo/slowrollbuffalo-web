@@ -339,21 +339,7 @@ class Rides(Base, TimeStampMixin, CreationMixin):
             zipcode=self.zipcode,
         )
         return resp
-    
 
-#class RideSponsors(Base, TimeStampMixin, CreationMixin):
-#
-#    __tablename__ = 'ride_sponsors'
-#    ride_id = Column(ForeignKey('rides.id'), nullable=False)
-#    partner_id = Column(ForeignKey('partners.id'), nullable=False)
-#
-#    def to_dict(self):
-#        resp = super(RideSponsors, self).to_dict()
-#        resp.update(
-#            ride_id=self.ride_id,
-#            partner_id=self.partner_id,
-#        )
-#
 
 class Checkins(Base, TimeStampMixin, CreationMixin):
 
@@ -381,3 +367,50 @@ class Checkins(Base, TimeStampMixin, CreationMixin):
             accepts_terms=self.accepts_terms,
         )
         return resp
+
+
+class Settings(Base, TimeStampMixin, CreationMixin):
+
+    __tablename__ = 'settings'
+    name = Column(UnicodeText, nullable=False)
+    value = Column(UnicodeText, nullable=False)
+    content_type = Column(UnicodeText)
+
+    @classmethod
+    def get_by_name(cls, name):
+        setting = DBSession.query(
+            Settings,
+        ).filter(
+            Settings.name == name,
+        ).first()
+        return setting
+
+    @classmethod
+    def get_setting_value(cls, name):
+        setting = Settings.get_by_name(name)
+        if setting:
+            if setting.content_type == 'int':
+                return int(setting.value)
+            elif setting.content_type == 'float':
+                return float(setting.value)
+            else
+                return setting.value
+        return None
+
+    @classmethod
+    def set_setting_value(cls, name, value, content_type):
+        setting  = Settings.get_by_name(name)
+        if setting:
+            setting = Settings.update_by_id(
+                settings.id,
+                settings.vlaue = value,
+                settings.content_type = content_type,
+            )
+        else
+            # setting doesn't exist, need to create it
+            setting = Settings.add(
+                name=name,
+                value=value,
+                content_type=content_type
+            )
+        return setting
