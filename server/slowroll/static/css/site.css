@@ -91,6 +91,40 @@ button {
 	padding: 0.2em 1em !important;
 }
 
+select {
+	height: 2.2rem;
+}
+
+#modal-new-partner {
+	text-align: left;
+}
+
+#modal-new-partner input {
+  	/*padding: 0.2em 1em;*/
+	width: 100%;
+	height: 2em;
+}
+
+#modal-new-partner textarea {
+	padding: 0.2em 1em !important;
+}
+
+#partner-geo-fence-button {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+#partner-geofence-latlng {
+	font-size: 75%;
+} 
+
+#partner-geofence-map {
+	width: 100%;
+	height: 500px;
+	margin-bottom: 1rem;
+}
+
+
 .ui-datepicker {
 	background: #FEFEFE;
 	border: 1px solid #999;

@@ -296,7 +296,7 @@ class PartnersAPI(object):
         resp = []
         print('\n')
         print('PartnersAPI.GET()')
-        print(self.user)
+        print(self.payload)
         if self.user:
             partners = Partners.get_all()
             if partners:
@@ -312,6 +312,9 @@ class PartnersAPI(object):
     @view_config(request_method='POST')
     def post(self):
         resp = {}
+        print('\n')
+        print('PartnersAPI.POST()')
+        print(self.payload)
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
                 partner = Partners.add(**self.payload)
@@ -380,7 +383,7 @@ class PartnerAPI(object):
 class RidesAPI(object):
 
     req = ('title', 'description', 'address_0', 'address_1', 
-           'city', 'state', 'zipcode')
+           'city', 'state', 'zipcode', 'sponsor_id')
 
     def __init__(self, request):
         self.request = build_request(request)
@@ -431,7 +434,7 @@ class RidesAPI(object):
 class RideAPI(object):
 
     req = ('title', 'description', 'address_0', 'address_1', 
-           'city', 'state', 'zipcode')
+           'city', 'state', 'zipcode', 'sponsor_id')
 
     def __init__(self, request):
         self.request = request

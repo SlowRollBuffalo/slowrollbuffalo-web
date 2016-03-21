@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="static/css/site.css" />
     <link rel="stylesheet" href="static/css/reveal.css" />
 
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
     
 </head>
 <body class="landing">
@@ -64,91 +65,52 @@
 							<input id="new-ride-state" type="text"></input>
 							<label>Zipcode</label>
 							<input id="new-ride-zipcode" type="text"></input>
+							<label>Ride Sponsor</label>
+							<select id="new-ride-sponsor-list"></select>
 							</br>
 							<button id="" class="right cancel-button modal-new-ride-cancel">Cancel</button>
 							<button id="create-new-ride" class="left create-button">Create Ride!</button>
-							
 						</div>
-						<!--
-						<table>
-							<thead>
-								<tr>
-									<td>Date</td>
-									<td>Location</td>
-									<td>Sponsor</td>
-									<td></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>July 20</td>
-									<td>Big Ditch Brewing - 55 E. Huron St.</td>
-									<td>Bid Ditch Brewing</td>
-									<td>
-										<a class="edit-link" href=""><i class="fa fa-pencil"></i></a>
-										<a class="trash-link" href=""><i class="fa fa-trash"></i></a>
-									</td>
-								</tr>
-								<tr>
-									<td>July 20</td>
-									<td>Big Ditch Brewing (55 E. Huron St.)</td>
-								</tr>
-								<tr>
-									<td>July 20</td>
-									<td>Big Ditch Brewing (55 E. Huron St.)</td>
-								</tr>
-								<tr>
-									<td>July 20</td>
-									<td>Big Ditch Brewing (55 E. Huron St.)</td>
-								</tr>
-								<tr>
-									<td>July 20</td>
-									<td>Big Ditch Brewing (55 E. Huron St.)</td>
-								</tr>
-								<tr>
-									<td>July 20</td>
-									<td>Big Ditch Brewing (55 E. Huron St.)</td>
-								</tr>
-								<tr>
-									<td>July 20</td>
-									<td>Big Ditch Brewing (55 E. Huron St.)</td>
-								</tr>
-							</tbody>
-						</table>
-						-->
 					</div>
 			    </div>
 			</section>
-
 			
-			<section id="rides" class="page box special features">
-			    <div class="row">
+			<section id="page-partners" class="page box special features">
+				<h2>Partners</h2>
+			    <div class="row2">
 					<div class="table-wrapper" style="width: 100%;">
-						<table>
-							<thead>
-								<tr>
-									<td>Date</td>
-									<td>Location</td>
-									<td>Sponsor</td>
-									<td></td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>July 20</td>
-									<td>Big Ditch Brewing - 55 E. Huron St.</td>
-									<td>Bid Ditch Brewing</td>
-									<td>
-										<a class="edit-link" href=""><i class="fa fa-pencil"></i></a>
-										<a class="trash-link" href=""><i class="fa fa-trash"></i></a>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</section>
+					    <div class=""><a id="open-new-partner-modal" class="new-link"><i class="fa fa-plus"></i></a></div>
+						<div id="partners-list"></div>
+						<div class="reveal-modal" id="modal-new-partner">
+							<h3>Create a new Partner</h3>
+							<label>Name</label>
+							<input id="new-partner-name" type="text"></input>
+							<label>Description</label>
+							<textarea id="new-partner-description" ></textarea>
+							<label>Notification Text</label>
+							<textarea id="new-partner-notification_text" ></textarea>
+							<label>Address</label>
+							<input id="new-partner-address" type="text"></input>
+							<label>City</label>
+							<input id="new-partner-city" type="text"></input>
+							<label>State</label>
+							<input id="new-partner-state" type="text"></input>
+							<label>Zipcode</label>
+							<input id="new-partner-zipcode" type="text"></input>
 
+							<center>
+								<button id="partner-geo-fence-button">Draw GeoFence</button>
+								<div id="partner-geofence-latlng"></div>
+							</center>
+							<div id="partner-geofence-map"></div>
+							
+							<button id="" class="right cancel-button modal-new-partner-cancel">Cancel</button>
+							<button id="create-new-partner" class="left create-button">Create Partner!</button>
+						</div>
+					</div>
+			    </div>
+			</section>
+			
 		</section>
 	</div>
 
@@ -164,14 +126,17 @@
 
     <script src="static/js/jquery.reveal.js"></script>
     
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
     <script src="static/js/site.js"></script>
 
     <script>
         
     	$(document).ready( function() {
-    		sr.init();
+    		
+    		app.init();
 
-    		sr.display_page('rides');
+    		app.display_page('rides');
 
     		/*
     		console.log('modal reveal');
