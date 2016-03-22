@@ -10,6 +10,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="static/css/main.css" />
+        <link rel="stylesheet" href="static/css/site.css" />
     </head>
     <body class="landing">
         <div id="page-wrapper">
@@ -20,12 +21,14 @@
                 </header>
 
             <!-- Banner -->
-                <section id="banner">
+                <section id="banner" class="frontpage-banner">
                     <h2>SlowRoll: Buffalo</h2>
                     <p>Bicycle with neighbors through the city of good neighbors.</p>
                     <ul class="actions">
-                        <li><a href="#" class="button special">Sign Up</a></li>
-                        <li><a href="#" class="button">Learn More</a></li>
+                        <!--<li><a href="#" class="button special">Sign Up</a></li>-->
+                        <!--<li><a href="#" class="button">Learn More</a></li>-->
+                        <img id="google-icon" src="static/images/googleplay_icon.png"></img>
+                        <img id="ios-icon" src="static/images/ios_app_icon.png"></img>
                     </ul>
                 </section>
 
@@ -45,10 +48,12 @@
 
                     <section class="box special features">
                         <div class="row">
-                            <div class="6u 12u(narrower)">
+                            <!--<div class="6u 12u(narrower)">-->
+                            <div>
                                 <h2>Get involved!</h2>
                                 <p>Schedule, locations, and volunteer opportunities with Slow Roll Buffalo can be found by joining our open <a href="http://www.facebook.com/groups/slowrollbuffalo/">Facebook group</a>. Slow Roll is free, but does require advance registration, which can be done online <a href="http://www.slowrollbuffalo.org/registration">HERE</a>. Information on the worldwide Slow Roll movement can be found at <a href="http://slowroll.bike">www.slowroll.bike</a>. We hope to have you rolling with us soon!</p>
                             </div>
+                            <!--
                             <div class="6u 12u(narrower)">
                                 <h3>SlowRoll code of conduct</h3>
                                 <ol>
@@ -67,6 +72,7 @@
                                     <li>Make friends &amp; have fun</li>
                                 </ol>
                             </div>
+                            -->
                         </div>
                     </section>
 
@@ -101,8 +107,8 @@
 	                </section>
                 </section>
 
-
             <!-- CTA -->
+            <!--
                 <section id="cta">
 
                     <h2>Want more updates?</h2>
@@ -123,21 +129,21 @@
                             </div>
                         </div>
                     </form>
-
-                </section>
+				</section>
+			-->
 
             <!-- Footer -->
                 <footer id="footer">
                     <ul class="icons">
-                        <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
-                        <li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
-                        <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
-                        <li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
-                        <li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
-                        <li><a href="#" class="icon fa-google-plus"><span class="label">Google+</span></a></li>
+                        <li><a href="https://www.facebook.com/events/286573141524950/" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+                        <li><a href="https://twitter.com/search?q=slowrollbuffalo" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+                        <!--<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>-->
+                        <li><a href="https://github.com/slowrollbuffalo" class="icon fa-github"><span class="label">Github</span></a></li>
+                        <!--<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>-->
+                        <!--<li><a href="#" class="icon fa-google-plus"><span class="label">Google+</span></a></li>-->
                     </ul>
                     <ul class="copyright">
-                        <li>&copy; Slow Roll. All rights reserved.</li>
+                        <li>&copy; SlowRoll Buffalo. All rights reserved.</li>
                     </ul>
                 </footer>
 

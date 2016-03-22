@@ -7,6 +7,19 @@ label {
 	margin-bottom: 0em !important;
 }
 
+#google-icon {
+	/*zoom: 70% !important;*/
+	width: 375px;
+	height: auto;
+	margin-right: 2rem;
+}
+
+#ios-icon {
+	/*zoom:70% !important;*/
+	width: 420px;
+	height: auto;	
+}
+
 .fa {
 	margin-right: .75rem;
 	margin-left: .75rem;
@@ -37,7 +50,12 @@ label {
 }
 
 .admin-banner {
-	padding: 4em 0 14em 0 !important
+	padding: 4em 0 14em 0 !important;
+}
+
+.frontpage-banner {
+	padding: 12em 0 14em 0 !important;
+	background-position: 0 -200px !important; 
 }
 
 .page {
