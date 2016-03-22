@@ -78,38 +78,18 @@
 									<thead>
 										<tr>
 											<td>Date</td>
+											<td>Sponsor</td>
 											<td>Location</td>
 										</tr>
 									</thead>
 									<tbody>
+									% for r in rides:
 										<tr>
-											<td>July 20</td>
-											<td>Big Ditch Brewing (55 E. Huron St.)</td>
+											<td>${r['ride']['title']}</td>
+											<td>${r['sponsor']['name']}</td>
+											<td>${r['ride']['address_0']}<br/>${r['ride']['city']}, ${r['ride']['zipcode']}</td>
 										</tr>
-										<tr>
-											<td>July 20</td>
-											<td>Big Ditch Brewing (55 E. Huron St.)</td>
-										</tr>
-										<tr>
-											<td>July 20</td>
-											<td>Big Ditch Brewing (55 E. Huron St.)</td>
-										</tr>
-										<tr>
-											<td>July 20</td>
-											<td>Big Ditch Brewing (55 E. Huron St.)</td>
-										</tr>
-										<tr>
-											<td>July 20</td>
-											<td>Big Ditch Brewing (55 E. Huron St.)</td>
-										</tr>
-										<tr>
-											<td>July 20</td>
-											<td>Big Ditch Brewing (55 E. Huron St.)</td>
-										</tr>
-										<tr>
-											<td>July 20</td>
-											<td>Big Ditch Brewing (55 E. Huron St.)</td>
-										</tr>
+									% endfor
 									</tbody>
 								</table>
 							</div>

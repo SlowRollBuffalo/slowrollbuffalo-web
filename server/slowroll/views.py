@@ -30,7 +30,15 @@ class Index(object):
 
     @view_config(request_method='GET', renderer='templates/index.mak')
     def get(self):
-        return {}
+        rides = []
+        _rides = Rides.get_paged(0, 10)
+        if _rides:
+            for ride, sponsor in _rides:
+                rides.append({
+                    'ride': ride.to_dict(),
+                    'sponsor': sponsor.to_dict(),
+                })
+        return {'rides': rides}
 
 
 @view_defaults(route_name='/admin')
