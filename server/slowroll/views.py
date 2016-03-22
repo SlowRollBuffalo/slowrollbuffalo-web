@@ -108,9 +108,10 @@ class UserLoginAPI(object):
                 print(resp)
                 Users.update_by_id(
                     user.id,
-                    platform=self.payload['platform']
+                    platform=self.payload['platform'].
+                    last_login=datetime.datetime.now(),
                 )
-                print(resp)
+                print(resp)t
             else:
                 #print('User was none.')
                 self.request.response.status = 403
@@ -404,7 +405,6 @@ class RidesAPI(object):
 
     def __init__(self, request):
         self.request = build_request(request)
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.start, self.count = build_paging(request)
         self.user = authenticate(request)
         self.payload = get_payload(request)
