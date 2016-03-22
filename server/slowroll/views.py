@@ -72,6 +72,7 @@ class UserLoginAPI(object):
     post_req = (
         'email',
         'password',
+        'platform',
     )
 
     def __init__(self, request):
@@ -94,14 +95,22 @@ class UserLoginAPI(object):
         resp = {}
         #print('\n')
         #print('UserLoginAPI.GET()')
+        print(self.payload)
         if self.payload and all(r in self.payload for r in self.post_req):
+            print('inside')
             email = self.payload['email']
             password = self.payload['password']
             user = Users.authenticate(email, password)
+            print(user)
             if user:
-                #print('User valid.')
                 self.request.session['token'] = user.token
                 resp = user.to_dict()
+                print(resp)
+                Users.update_by_id(
+                    user.id,
+                    platform=self.payload['platform']
+                )
+                print(resp)
             else:
                 #print('User was none.')
                 self.request.response.status = 403

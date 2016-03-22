@@ -15,6 +15,7 @@ def do_login(email, password):
     data = json.dumps({
         'email': email,
         'password': hashlib.sha256('password'.encode('utf-8')).hexdigest(), 
+        'platform': 'testing',
     })
     resp = requests.post(base_url + '/api/users/login', data)
     return json.loads(resp.text)

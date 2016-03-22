@@ -35,13 +35,15 @@
 		<!-- Races -->
 		<section id="main" class="container">
 
-			<div class="page-nav">
+			<!--<div class="page-nav">-->
+			<section id="admin-nav" class="box special features">
 				<div class="page-nav-link-wrapper"><a id="page-nav-link-rides" class="page-nav-link">Rides</a></div>
 				<div class="page-nav-link-wrapper"><a id="page-nav-link-partners" class="page-nav-link">Partners</a></div>
 				<div class="page-nav-link-wrapper"><a id="page-nav-link-users" class="page-nav-link">Users</a></div>
 				<div class="page-nav-link-wrapper"><a id="page-nav-link-settings" class="page-nav-link">Settings</a></div>
 				<div class="page-nav-link-wrapper"><a id="page-nav-link-logout" class="page-nav-link">Logout</a></div>
-			</div>
+			</section>
+			<!--</div>-->
 
 			<section id="page-rides" class="page box special features">
 				<h2>Rides</h2>
@@ -109,6 +111,16 @@
 						</div>
 					</div>
 			    </div>
+			</section>
+
+			<section id="page-users" class="page box special features">
+				<h2>Users</h2>
+			    <div class="row2">
+					<div class="table-wrapper" style="width: 100%;">
+					    <div class=""><a id="open-new-partner-modal" class="new-link"><i class="fa fa-plus"></i></a></div>
+						<div id="users-list"></div>
+					</div>
+				</div>
 			</section>
 			
 		</section>

@@ -128,6 +128,8 @@ class Users(Base, TimeStampMixin, CreationMixin):
     validated = Column(Boolean, nullable=False)
     token = Column(UnicodeText, nullable=True)
     token_expire_datetime = Column(DateTime, nullable=True)
+    platform = Column(UnicodeText, nullable=False)
+    last_login = Column(DateTime, nullable=True)
 
     @classmethod
     def create_new_user(cls, first, last, email, password, is_admin=False):
@@ -149,6 +151,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
             validated = False,
             token = None,
             token_expire_datetime = None,
+            platform = '',
         )
         return user
 
@@ -236,12 +239,14 @@ class Users(Base, TimeStampMixin, CreationMixin):
     def to_dict(self):
         resp = super(Users, self).to_dict()
         resp.update(
-            is_admin = self.is_admin,
-            first = self.first,
-            last = self.last,
-            email = self.email, 
-            token = self.token,
-            token_expire_datetime = str(self.token_expire_datetime),
+            is_admin=self.is_admin,
+            first=self.first,
+            last=self.last,
+            email=self.email, 
+            token=self.token,
+            token_expire_datetime=str(self.token_expire_datetime),
+            platform=self.platform,
+            last_login=str(self.last_login),
         )
         return resp
 

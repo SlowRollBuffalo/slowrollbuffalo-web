@@ -115,6 +115,7 @@ var app = {
             data: JSON.stringify({
                 email: email,
                 password: password,
+                platform: 'web'
             }),
             success: function(resp) {success(resp); },
             error: function(resp) { failure(resp); }
@@ -141,6 +142,10 @@ var app = {
 			case 'partners':
 				$('#page-partners').show();
 				app.models['partners'].refresh();
+				break;
+			case 'users':
+				$('#page-users').show();
+				app.models['users'].refresh();
 				break;
 			case 'logout':
 				app.logout(
@@ -314,10 +319,60 @@ var app = {
 	        	'is_admin' //: 'checkbox'
 	     	],
 
+	     	start: 0,
+	     	count: 50,
 			collection: [],
 			single: {},
 
-			refresh: function() { },
+			refresh: function() { 
+				console.log('users.refresh()');
+
+				$('#users-list').html('<img src="static/gears.svg"></img>');
+
+				app.actions.get_collection(
+					'users',
+					app.models['users'].start,
+					app.models['users'].count,
+					function(resp) {
+						console.log(resp);
+						app.models['users'].collection = resp;
+						var users = resp;
+						var html = '';
+						html += '<div class="button-holder">';
+						if ( app.models.users.start != 0 )
+							html += '<button class="left">&lt;&lt; Previous</button>';
+						if ( users.length == app.models.users.count )
+							html += '<button class="right">Next &gt;&gt;</button></div>';
+						if ( users.length == 0 )
+							html += '<p>No Users yet!</p>';
+						else {
+							html += '<table>';
+							html += '<thead>';
+							html += '<tr><td>Name</td><td>Last Login</td><td>Platform</td><td>Actions</td></tr>';
+							html += '</thead>';
+							html += '<tbody>';
+							for(var i=0; i<users.length; i++) {
+								var user = users[i];
+								html += '<tr>';
+								html += '<td>' + user.first + ' ' + user.last + '</td>';
+								html += '<td>' + user.last_login + '</td>';
+								html += '<td>' + user.platform + '</td>';
+								//html += '<td>' + sponsor.name + '</td>';
+								html += '<td>';
+								//html += '    <a id="edit-user-' + user.id + '" class="edit-link"><i class="fa fa-pencil"></i></a>';
+								//html += '    <a id="cancel-user-' + user.id + '"><i class="fa fa-trash"></i></a>';
+								html += '    <a id="info-user-' + user.id + '" class="info-link"><i class="fa fa-info"></i></a>';
+								html += '</td>';
+								html += '</tr>';
+							}
+							html += '</tbody>';
+							html += '</table>'
+						}
+						$('#users-list').html(html);
+					},
+					function(resp) { /* window.location = '/login'; */ }
+				);
+			},
 
     	},
 
@@ -337,7 +392,7 @@ var app = {
 				'geo_fence' //: 'geo_fence' 
 			],
 			start: 0,
-			count: 100,
+			count: 50,
 			collection: [],
 			single: {},
 
