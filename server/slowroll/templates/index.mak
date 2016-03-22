@@ -91,7 +91,7 @@
 									<tbody>
 									% for r in rides:
 										<tr>
-											<td>${r['ride']['title']}</td>
+											<td>${r['ride']['ride_datetime']}</td>
 											<td>${r['sponsor']['name']}</td>
 											<td>${r['ride']['address_0']}<br/>${r['ride']['city']}, ${r['ride']['zipcode']}</td>
 										</tr>
