@@ -497,7 +497,7 @@ class RideAPI(object):
 @view_defaults(route_name='/api/checkins', renderer='json')
 class CheckinsAPI(object):
 
-    req = ('race_id', 'user_id')
+    req = ('ride_id')
 
     def __init__(self, request):
         self.request = build_request(request)
@@ -525,6 +525,9 @@ class CheckinsAPI(object):
         resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
+                self.payload.update(
+                    user_id=self.id,
+                )
                 checkin = Checkins.add(**self.payload)
                 if checkin:
                     resp = checkin.to_dict()
@@ -541,7 +544,7 @@ class CheckinsAPI(object):
 @view_defaults(route_name='/api/checkins/{id}', renderer='json')
 class CheckinAPI(object):
 
-    req = ('race_id', 'user_id', 'accepts_terms')
+    req = ('ride_id', 'user_id', 'accepts_terms')
 
     def __init__(self, request):
         self.request = request

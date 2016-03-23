@@ -350,25 +350,25 @@ class Rides(Base, TimeStampMixin, CreationMixin):
 class Checkins(Base, TimeStampMixin, CreationMixin):
 
     __tablename__ = 'checkins'
-    race_id = Column(ForeignKey('rides.id'), nullable=False)
+    ride_id = Column(ForeignKey('rides.id'), nullable=False)
     user_id = Column(ForeignKey('users.id'), nullable=False)
     #accepts_terms = Column(Boolean, nullable=False)    
 
     @classmethod
-    def get_by_race_id(cls, race_id, start=0, count=50):
+    def get_by_ride_id(cls, ride_id, start=0, count=50):
         users = DBSession.query(
             Users,
         ).outerjoin(
             Checkins, Checkins.user_id == Users.id,
         ).filter(
-            Checkins.race_id == race_id,
+            Checkins.ride_id == ride_id,
         ).slice(start, start+count).all()
         return users
 
     def to_dict(self):
         resp = super(Checkins, self).to_dict()
         resp.update(
-            race_id=self.race_id,
+            ride_id=self.ride_id,
             user_id=self.user_id,
             accepts_terms=self.accepts_terms,
         )
