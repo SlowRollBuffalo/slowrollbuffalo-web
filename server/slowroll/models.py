@@ -368,9 +368,9 @@ class Checkins(Base, TimeStampMixin, CreationMixin):
     def to_dict(self):
         resp = super(Checkins, self).to_dict()
         resp.update(
-            ride_id=self.ride_id,
-            user_id=self.user_id,
-            accepts_terms=self.accepts_terms,
+            ride_id=str(self.ride_id),
+            user_id=str(self.user_id),
+            #accepts_terms=self.accepts_terms,
         )
         return resp
 

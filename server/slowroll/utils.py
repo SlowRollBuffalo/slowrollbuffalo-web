@@ -16,8 +16,11 @@ def get_payload(request):
             if '_datetime' in key:
                 dt = datetime.datetime.strptime(payload[key], '%m/%d/%Y')
                 payload[key] = dt
+            elif '_id' in key:
+                payload[key] = payload[key].replace('-','')
     except:
         payload = None
+    print(payload)
     return payload
 
 

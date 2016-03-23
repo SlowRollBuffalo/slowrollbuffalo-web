@@ -497,7 +497,7 @@ class RideAPI(object):
 @view_defaults(route_name='/api/checkins', renderer='json')
 class CheckinsAPI(object):
 
-    req = ('ride_id')
+    req = ('ride_id',)
 
     def __init__(self, request):
         self.request = build_request(request)
@@ -522,11 +522,16 @@ class CheckinsAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
+        print('checkins.POST()')
         resp = {}
-        if self.user and self.user.is_admin:
+        if self.user:
+            print('if self.user:')
+            print(self.payload)
+            print(self.req)
             if self.payload and all(r in self.payload for r in self.req):
+                print('if self.payload and all(r in self.payload for r in self.req):')
                 self.payload.update(
-                    user_id=self.id,
+                    user_id=self.user.id,
                 )
                 checkin = Checkins.add(**self.payload)
                 if checkin:
@@ -544,7 +549,7 @@ class CheckinsAPI(object):
 @view_defaults(route_name='/api/checkins/{id}', renderer='json')
 class CheckinAPI(object):
 
-    req = ('ride_id', 'user_id', 'accepts_terms')
+    req = ('ride_id', 'user_id')
 
     def __init__(self, request):
         self.request = request
