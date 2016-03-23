@@ -497,7 +497,7 @@ class RideAPI(object):
 @view_defaults(route_name='/api/checkins', renderer='json')
 class CheckinsAPI(object):
 
-    req = ('race_id', 'user_id', 'accepts_terms')
+    req = ('race_id', 'user_id')
 
     def __init__(self, request):
         self.request = build_request(request)

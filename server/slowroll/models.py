@@ -287,6 +287,7 @@ class Partners(Base, TimeStampMixin, CreationMixin):
     fence_top_left_lng = Column(Float, nullable=False)
     fence_bottom_right_lat = Column(Float, nullable=False)
     fence_bottom_right_lng = Column(Float, nullable=False)
+    #partner_level = Column(UnicodeText, nullable=False)
     
     def to_dict(self):
         resp = super(Partners, self).to_dict()
@@ -351,7 +352,7 @@ class Checkins(Base, TimeStampMixin, CreationMixin):
     __tablename__ = 'checkins'
     race_id = Column(ForeignKey('rides.id'), nullable=False)
     user_id = Column(ForeignKey('users.id'), nullable=False)
-    accepts_terms = Column(Boolean, nullable=False)    
+    #accepts_terms = Column(Boolean, nullable=False)    
 
     @classmethod
     def get_by_race_id(cls, race_id, start=0, count=50):
