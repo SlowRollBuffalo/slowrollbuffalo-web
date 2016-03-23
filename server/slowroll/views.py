@@ -108,10 +108,10 @@ class UserLoginAPI(object):
                 print(resp)
                 Users.update_by_id(
                     user.id,
-                    platform=self.payload['platform'].
+                    platform=self.payload['platform'],
                     last_login=datetime.datetime.now(),
                 )
-                print(resp)t
+                print(resp)
             else:
                 #print('User was none.')
                 self.request.response.status = 403
