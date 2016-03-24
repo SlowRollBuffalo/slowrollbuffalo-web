@@ -4,6 +4,7 @@ import json
 import hashlib
 
 base_url = 'http://localhost:6577'
+#base_url = 'http://slowrollbuffalo.mycodespace.net'
 
 def build_url(model, token, _id=False):
     if _id:
@@ -18,6 +19,7 @@ def do_login(email, password):
         'platform': 'testing',
     })
     resp = requests.post(base_url + '/api/users/login', data)
+    print(resp.text)
     return json.loads(resp.text)
 
 def do_get(model, _id):
@@ -98,9 +100,9 @@ def load_rides(token, partners):
               'address_1', 'city', 'state', 'zipcode')
 
     data = (
-        ('Dig the Ditch', "Big Ditch Brewing is amazeballs, let's support them!", '04/01/2016', partners[0]['id'],
+        ('Dig the Ditch', "Big Ditch Brewing is amazeballs, let's support them!", '03/22/2016', partners[0]['id'],
          '42 answer blvd.', '', 'Buffalo', 'NY', '14202'),
-        ('Work dat flow', "Buffalo River Works is doing work, let's support them!", '05/02/2016', partners[1]['id'],
+        ('Work dat flow', "Buffalo River Works is doing work, let's support them!", '04/20/2016', partners[1]['id'],
          '1234 general ct.', '', 'Buffalo', 'NY', '14203'),
     )
     rides = do_load(token, 'rides', fields, data)

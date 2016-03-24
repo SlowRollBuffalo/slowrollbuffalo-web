@@ -7,6 +7,11 @@ label {
 	margin-bottom: 0em !important;
 }
 
+
+.hasDatepicker {
+	width: 100% !important;
+}
+
 #admin-nav {
 	margin: 0 !important;
 }
@@ -68,6 +73,7 @@ label {
 
 .page {
 	display: none;
+	padding-top: 1rem !important;
 }
 
 button {
@@ -115,10 +121,6 @@ button {
 
 #modal-new-ride textarea {
 	padding: 0.2em 1em !important;
-}
-
-select {
-	height: 2.2rem;
 }
 
 #modal-new-partner {
@@ -188,4 +190,52 @@ select {
 
 .ui-datepicker-title {
 	text-align: center;
+}
+
+#new-ride-bad-inputs {
+	display: none;
+	box-shadow: 0 0 0 2px #e89980;
+    border: 2px solid #e89980;
+    background: rgba(255, 0, 0, .2);
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+    padding: .25rem;
+    width: 100%;
+}
+
+#new-partner-bad-inputs {
+	display: none;
+	box-shadow: 0 0 0 2px #e89980;
+    border: 2px solid #e89980;
+    background: rgba(255, 0, 0, .2);
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+    padding: .25rem;
+    width: 100%;
+}
+
+#new-partner-bad-geofence {
+	display: none;
+	box-shadow: 0 0 0 2px #e89980;
+    border: 2px solid #e89980;
+    background: rgba(255, 0, 0, .2);
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+    padding: .25rem;
+    width: 100%;
+}
+
+.bad-input {
+	/*border-color: #e89980;*/
+    /*
+    box-shadow: 0 0 0 2px #e89980;
+    border: 2px solid #e89980;
+    background: rgba(255, 0, 0, .2);
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+    padding: .25rem;
+    width: 100%;
+    */
+    border: 2px solid #e89980 !important;
+    background: rgba(255, 0, 0, .3) !important;
 }

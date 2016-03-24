@@ -19,6 +19,7 @@ var app = {
 
 		// connect creating a new ride modal
 		$('#open-new-ride-modal').on('click', function() {
+			/*
 			app.populate_sponsors_list();
 			$('#modal-new-ride').reveal({
     			animation: 'fadeAndPop',
@@ -26,6 +27,8 @@ var app = {
     			closeonbackgroundclick: true,
     			dismissmodalclass: 'modal-new-ride-cancel'
     		});
+    		*/
+    		app.display_page('new-ride');
 		})
 
 		// connect date picker
@@ -33,26 +36,69 @@ var app = {
 
 		// connect create new ride button in modal
 		$('#create-new-ride').on('click', function() {
+			
+			var title = $('#new-ride-title').val();
+			var description = $('#new-ride-description').val();
+			var ride_datetime = $('#new-ride-ride_datetime').val();
+			var address_0 = $('#new-ride-address_0').val();
+			var city = $('#new-ride-city').val();
+			var state = $('#new-ride-state').val();
+			var zipcode = $('#new-ride-zipcode').val();
+			var sponsor_id = $('#new-ride-sponsor_id').val();
+
 			var data = {
-				'title': $('#new-ride-title').val(),
-				'description': $('#new-ride-description').val(),
-				'ride_datetime': $('#new-ride-ride_datetime').val(),
-				'address_0': $('#new-ride-address').val(),
-				'address_1': '',
-				'city': $('#new-ride-city').val(),
-				'state': $('#new-ride-state').val(),
-				'zipcode': $('#new-ride-zipcode').val(),
-				'sponsor_id': $('#new-ride-sponsor-list').val()
+				'title': title,
+				'description': description,
+				'ride_datetime': ride_datetime,
+				'address_0': address_0,
+				//'address_1': '',
+				'city': city,
+				'state': state,
+				'zipcode': zipcode,
+				'sponsor_id': sponsor_id 
 			};
-			app.actions.create(
-				'rides',
-				data,
-				function() {
-					$('#modal-new-ride').trigger('reveal:close');
-					app.models['rides'].refresh();
-				},
-				function() { window.location = '/login'; }
-			);
+
+			var bad_input = false;
+			for( var key in data ) {
+				if ( data[key] == '' ) {
+					console.log('bad input: ' + key)
+					$('#new-ride-' + key).addClass('bad-input');
+					bad_input = true;
+				}
+			}
+
+			// make sure our inputs are valid
+			if ( bad_input ) {
+				$("html, body").animate({ scrollTop: 0 });
+				//alert('Please check your inputs, and try again.');
+				$('#new-ride-bad-iputs').show();
+			}
+			else {
+
+				// hack
+				data['address_1'] = '';
+
+				app.actions.create(
+					'rides',
+					data,
+					function(resp) {
+						//$('#modal-new-ride').trigger('reveal:close');
+						app.models['rides'].refresh(function() {
+							app.display_page('rides');	
+						});
+					},
+					function(resp) { 
+						console.log('create_new_ride: error');
+						console.log(resp);
+						if ( resp.status == 400 ) {
+							// missing information
+						}
+
+						//window.location = '/login';
+					}
+				);
+
+			}
 		});
 
 		//
@@ -67,12 +113,15 @@ var app = {
 
 		// connect creating a new partner modal
 		$('#open-new-partner-modal').on('click', function() {
+			/*
 			$('#modal-new-partner').reveal({
     			animation: 'fadeAndPop',
     			animationspeed: 250,
     			closeonbackgroundclick: true,
     			dismissmodalclass: 'modal-new-partner-cancel'
     		});
+    		*/
+    		app.display_page('new-partner');
 		})
 
 		// connect date picker
@@ -80,29 +129,89 @@ var app = {
 
 		// connect create new partner button in modal
 		$('#create-new-partner').on('click', function() {
+			
+			var name = $('#new-partner-name').val();
+			var description = $('#new-partner-description').val();
+			var notification_text = $('#new-partner-notification_text').val();
+			var address_0 = $('#new-partner-address_0').val();
+			var city = $('#new-partner-city').val();
+			var state = $('#new-partner-state').val();
+			var zipcode = $('#new-partner-zipcode').val();
+			var fence_top_left_lat = '';
+			var fence_top_left_lng = '';
+			var fence_bottom_right_lat = '';
+			var fence_bottom_right_lng = '';
+
+			if ( app.geofence != undefined ) {
+				fence_top_left_lat = app.geofence.top_left_lat;
+				fence_top_left_lng = app.geofence.top_left_lng;
+				fence_bottom_right_lat = app.geofence.bottom_right_lat;
+				fence_bottom_right_lng = app.geofence.bottom_right_lng;
+			}
+
 			var data = {
-				'name': $('#new-partner-name').val(),
-				'description': $('#new-partner-description').val(),
-				'notification_text': $('#new-partner-notification_text').val(),
-				'address_0': $('#new-partner-address').val(),
-				'address_1': '',
-				'city': $('#new-partner-city').val(),
-				'state': $('#new-partner-state').val(),
-				'zipcode': $('#new-partner-zipcode').val(),
-				'fence_top_left_lat': app.geofence.top_left_lat,
-				'fence_top_left_lng': app.geofence.top_left_lng,
-				'fence_bottom_right_lat': app.geofence.bottom_right_lat,
-				'fence_bottom_right_lng': app.geofence.bottom_right_lng,
+				'name': name,
+				'description': description,
+				'notification_text': notification_text,
+				'address_0': address_0,
+				//'address_1': '',
+				'city': city,
+				'state': state,
+				'zipcode': zipcode,
+				'fence_top_left_lat': fence_top_left_lat,
+				'fence_top_left_lng': fence_top_left_lng,
+				'fence_bottom_right_lat': fence_bottom_right_lat,
+				'fence_bottom_right_lng': fence_bottom_right_lng
 			};
-			app.actions.create(
-				'partners',
-				data,
-				function() {
-					$('#modal-new-partner').trigger('reveal:close');
-					app.models['partners'].refresh();
-				},
-				function() { window.location = '/login'; }
-			);
+
+			var bad_input = false;
+			for( var key in data ) {
+				if ( data[key] == '' ) {
+					console.log('bad input: ' + key)
+					$('#new-partner-' + key).addClass('bad-input');
+					bad_input = true;
+				}
+			}
+
+			if ( fence_top_left_lat == '' || fence_top_left_lng == '' || 
+				 fence_bottom_right_lat == '' || fence_bottom_right_lat == '' )
+			{
+				$('#new-partner-bad-geofence').show();
+				bad_input = true;
+			}
+
+			// make sure our inputs are valid
+			if ( bad_input ) {
+				$("html, body").animate({ scrollTop: 0 });
+				//alert('Please check your inputs, and try again.');
+				$('#new-partner-bad-inputs').show();
+			}
+			else {
+
+				// hack ...
+				data['address_1'] = '';				
+
+				app.actions.create(
+					'partners',
+					data,
+					function() {
+						//$('#modal-new-partner').trigger('reveal:close');
+						app.models['partners'].refresh(function() {
+							app.display_page('partners');
+						});
+					},
+					function(resp) { 
+						console.log('create_new_ride: error');
+						console.log(resp);
+						if ( resp.status == 400 ) {
+							// missing information
+						}
+
+						//window.location = '/login';
+					}
+				);
+
+			}
 		});
 
 		console.log('app.init() complete.');
@@ -139,9 +248,18 @@ var app = {
 				$('#page-rides').show();
 				app.models['rides'].refresh();
 				break;
+			case 'new-ride':
+				$('#page-new-ride').show();
+				app.populate_sponsors_list();
+				break;
 			case 'partners':
 				$('#page-partners').show();
 				app.models['partners'].refresh();
+				break;
+			case 'new-partner':
+				$('#page-new-partner').show();
+				//app.populate_sponsors_list();
+				//app.models['rides'].refresh();
 				break;
 			case 'users':
 				$('#page-users').show();
@@ -152,6 +270,7 @@ var app = {
 					function() { window.location = '/login' },
 				 	function() { window.location = '/login' }
 				);
+				break;
 			default:
 				//window.location = '/login';
 				break;
@@ -251,7 +370,7 @@ var app = {
 			var partner = partners[i];
 			html += '<option value="'+ partner.id + '"">' + partner.name + '</option>';
 		}
-		$('#new-ride-sponsor-list').html(html);
+		$('#new-ride-sponsor_id').html(html);
 	},
 
 	actions: {
@@ -270,19 +389,19 @@ var app = {
 				url: '/api/' + model + '?start=' + start + '&count=' + count,
 				type: 'GET',
 				success: function(resp) { success(resp); },
-				failure: function(resp) { failure(resp); }
+				error: function(resp) { failure(resp); }
 			});
 		},
 
 		create: function(model, thing, success, failure) {
 			var data = JSON.stringify(thing);
-			console.log('create(), sending: ' + data);
+			//console.log('create(), sending: ' + data);
 			$.ajax({
 				url: '/api/' + model,
 				type: 'POST',
 				data: data,
 				success: function(resp) { success(resp); },
-				failure: function(resp) { failsure(resp); }
+				error: function(resp) { failure(resp); }
 			});
 		},
 
@@ -292,7 +411,7 @@ var app = {
 				type: 'PUT',
 				data: JSON.stringify(thing),
 				success: function(resp) { success(resp); },
-				failure: function(resp) { failsure(resp); }
+				error: function(resp) { failure(resp); }
 			});
 		},
 
@@ -301,7 +420,7 @@ var app = {
 				url: '/api/' + model + '/' + id,
 				type: 'DELETE',
 				success: function(resp) { success(resp); },
-				failure: function(resp) { failsure(resp); }
+				error: function(resp) { failure(resp); }
 			});
 		},
 	},
@@ -324,7 +443,7 @@ var app = {
 			collection: [],
 			single: {},
 
-			refresh: function() { 
+			refresh: function(callback) { 
 				console.log('users.refresh()');
 
 				$('#users-list').html('<img src="static/gears.svg"></img>');
@@ -369,6 +488,10 @@ var app = {
 							html += '</table>'
 						}
 						$('#users-list').html(html);
+
+						if ( callback != undefined )
+							callback();
+
 					},
 					function(resp) { /* window.location = '/login'; */ }
 				);
@@ -396,7 +519,7 @@ var app = {
 			collection: [],
 			single: {},
 
-			refresh: function() { 
+			refresh: function(callback) { 
 
 				console.log('partners.refresh()');
 
@@ -441,6 +564,10 @@ var app = {
 							html += '</table>'
 						}
 						$('#partners-list').html(html);
+
+						if ( callback != undefined )
+							callback();
+
 					},
 					function(resp) { /* window.location = '/login'; */ }
 				);
@@ -465,7 +592,7 @@ var app = {
 			collection: [],
 			single: {},
 
-			refresh: function() {
+			refresh: function(callback) {
 
 				$('#rides-list').html('<img src="static/gears.svg"></img>');
 
@@ -508,6 +635,9 @@ var app = {
 							html += '</table>'
 						}
 						$('#rides-list').html(html);
+
+						if ( callback != undefined )
+							callback();
 					},
 					function(resp) { /* window.location = '/login'; */ }
 				);
