@@ -2263,10 +2263,14 @@ body.landing #page-wrapper {
 #banner {
   background-attachment: scroll,							fixed;
   background-color: #666;
-  background-image: url("/static/images/bikes.jpg");
-  background-position: 0 -410px;
-  background-repeat: repeat,							no-repeat;
-  background-size: auto,							cover;
+  /*background-image: url("/static/images/bikes.jpg");*/
+  background-image: url("/static/images/slowroll2015shot1.jpg");
+  /*background-position: 0 -410px;*/
+  background-position: 0, -150px;
+  /*background-repeat: repeat,							no-repeat;*/
+  background-repeat: no-repeat;
+  /*background-size: auto,							cover;*/
+  background-size: cover;
   color: #fff;
   padding: 12em 0 20em 0;
   text-align: center; }
