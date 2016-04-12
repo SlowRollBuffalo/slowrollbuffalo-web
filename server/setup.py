@@ -17,7 +17,8 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
-    'sqlalchemy_utils'
+    'sqlalchemy_utils',
+    'wsgicors',
     ]
 
 setup(name='slowroll',

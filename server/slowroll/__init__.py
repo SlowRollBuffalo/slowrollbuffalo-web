@@ -11,6 +11,7 @@ from .models import (
     Base,
     )
 
+'''
 def request_factory(environ):
     request = Request(environ)
     if request.is_xhr:
@@ -23,6 +24,7 @@ def request_factory(environ):
             )
         )
     return request
+'''
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -47,7 +49,7 @@ def main(global_config, **settings):
     config.set_session_factory(my_session_factory)
 
     # enables cors so the app can do AJAX calls.
-    config.set_request_factory(request_factory)
+    #config.set_request_factory(request_factory)
 
     config.add_route('/', '/')
     config.add_route('/login', '/login')
@@ -58,6 +60,7 @@ def main(global_config, **settings):
     config.add_route('/api/users/logout', '/api/users/logout')
     config.add_route('/api/users/register', '/api/users/register')
     config.add_route('/api/users/legal', '/api/users/legal')
+
     config.add_route('/api/users', '/api/users')
     config.add_route('/api/users/{id}', '/api/users/{id}')
 
@@ -79,4 +82,8 @@ def main(global_config, **settings):
     
 
     config.scan()
-    return config.make_wsgi_app()
+
+    #return config.make_wsgi_app()
+
+    from wsgicors import CORS
+    return CORS(config.make_wsgi_app(), headers="*", methods="*", maxage="180", origin="*")

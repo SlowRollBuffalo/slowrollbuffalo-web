@@ -10,6 +10,11 @@ var app = {
 		$('#page-nav-link-settings').on('click', function() { app.display_page('settings'); } );
 		$('#page-nav-link-logout').on('click', function() { app.display_page('logout'); } );
 
+		$('#cancel-new-ride').on('click', function() { app.display_page('rides'); });
+		$('#cancel-new-partner').on('click', function() { app.display_page('partners'); });
+
+		$('#legal-notice-update-button').on('click', function() { app.models.settings.update_legal(); });
+
 		//
 		// Rides
 		//
@@ -108,9 +113,6 @@ var app = {
 		// refresh the partner list
 		app.models['partners'].refresh();
 
-		// init the map for partner geo fence
-		app.init_geofence_map();
-
 		// connect creating a new partner modal
 		$('#open-new-partner-modal').on('click', function() {
 			/*
@@ -122,6 +124,9 @@ var app = {
     		});
     		*/
     		app.display_page('new-partner');
+
+    		// init the map for partner geo fence
+			app.init_geofence_map();
 		})
 
 		// connect date picker
@@ -265,6 +270,10 @@ var app = {
 				$('#page-users').show();
 				app.models['users'].refresh();
 				break;
+			case 'settings':
+				$('#page-settings').show();
+				app.models['settings'].refresh_legal();
+				break;
 			case 'logout':
 				app.logout(
 					function() { window.location = '/login' },
@@ -278,88 +287,97 @@ var app = {
 		
 	},
 
+	map: null,
+	mainTileLayer: null,
 	geo_fence: {},
 
 	init_geofence_map: function() {
 
-		// initialize map
-        var mainTileLayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-             attribution: 'Map data © OpenStreetMap contributors',
-             minZoom: 4,
-             maxZoom: 16
-        }),
+		console.log('app.init_geofence_map()');
 
-        map = L.map('partner-geofence-map', {
-            center: [42.91, -78.85],
-            zoom: 11,
-            layers: [
-                mainTileLayer
-            ]
-        });
+		if ( app.map == null ) {
+ 
+			console.log('app.init_geofence_map(), setting up map ...');
 
-        map.drawingBox = false;
-        map.geoBox = false;
+			// initialize map
+	        app.mainTileLayer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	             attribution: 'Map data © OpenStreetMap contributors',
+	             minZoom: 4,
+	             maxZoom: 16
+	        }),
 
-        $('#partner-geo-fence-button').on('click', function (e) {
-            map.enableDrawing = true;
-            $('.leaflet-container').css('cursor','crosshair','!important');
-            if ( map.geoBox != false ) {
-                map.removeLayer(map.geoBox);
-            }
-        });
+	        app.map = L.map('partner-geofence-map', {
+	            center: [42.91, -78.85],
+	            zoom: 11,
+	            layers: [
+	                app.mainTileLayer
+	            ]
+	        });
 
-        map.on('mousedown', function (e) {
-            L.DomUtil.disableImageDrag();
-            L.DomUtil.disableTextSelection();
-            if (map.enableDrawing) {
-                map.removeLayer(map.geoBox);
-                map.dragging.disable();
-                map.drawingBox = true;
-                map.topLeftCord = e.latlng;
-            }
-        });
+	        app.map.drawingBox = false;
+	        app.map.geoBox = false;
 
-        map.on('mousemove', function (e) {
-            if (map.enableDrawing && map.drawingBox) {
-                map.removeLayer(map.geoBox);
-                map.geoBox = L.rectangle([map.topLeftCord, e.latlng], {color:'#ff7800', weight:1});
-                map.addLayer(map.geoBox);
-            }
-        });
+	        $('#partner-geo-fence-button').on('click', function (e) {
+	            app.map.enableDrawing = true;
+	            $('.leaflet-container').css('cursor','crosshair','!important');
+	            if ( app.map.geoBox != false ) {
+	                map.removeLayer(app.map.geoBox);
+	            }
+	        });
 
-        map.on('mouseup', function (e) {
-            L.DomUtil.enableImageDrag();
-            L.DomUtil.enableTextSelection();
-            $('.leaflet-container').css('cursor','pointer','!important'); 
-            if (map.enableDrawing && map.drawingBox) {
-                map.removeLayer(map.geoBox);
-                var bounds = [map.topLeftCord, e.latlng];
-                map.geoBox = L.rectangle(bounds, {color:'#00FF78', weight:2});
-                map.addLayer(map.geoBox);
+	        app.map.on('mousedown', function (e) {
+	            L.DomUtil.disableImageDrag();
+	            L.DomUtil.disableTextSelection();
+	            if (app.map.enableDrawing) {
+	                app.map.removeLayer(app.map.geoBox);
+	                app.map.dragging.disable();
+	                app.map.drawingBox = true;
+	                app.map.topLeftCord = e.latlng;
+	            }
+	        });
 
-                var top_left_lat = Math.round(map.topLeftCord.lat * 10000) / 10000;
-                var top_left_lng = Math.round(map.topLeftCord.lng * 10000) / 10000;
+	        app.map.on('mousemove', function (e) {
+	            if (app.map.enableDrawing && app.map.drawingBox) {
+	                app.map.removeLayer(app.map.geoBox);
+	                app.map.geoBox = L.rectangle([app.map.topLeftCord, e.latlng], {color:'#ff7800', weight:1});
+	                app.map.addLayer(app.map.geoBox);
+	            }
+	        });
 
-                var bottom_right_lat = Math.round(e.latlng.lat * 10000) / 10000;
-                var bottom_right_lng = Math.round(e.latlng.lng * 10000) / 10000;
+	        app.map.on('mouseup', function (e) {
+	            L.DomUtil.enableImageDrag();
+	            L.DomUtil.enableTextSelection();
+	            $('.leaflet-container').css('cursor','pointer','!important'); 
+	            if (app.map.enableDrawing && app.map.drawingBox) {
+	                app.map.removeLayer(app.map.geoBox);
+	                var bounds = [app.map.topLeftCord, e.latlng];
+	                app.map.geoBox = L.rectangle(bounds, {color:'#00FF78', weight:2});
+	                app.map.addLayer(app.map.geoBox);
 
-                $('#partner-geofence-latlng').html('[' + top_left_lat + ', ' + top_left_lng + ', ' + bottom_right_lat + ', ' + bottom_right_lng);
+	                var top_left_lat = Math.round(app.map.topLeftCord.lat * 10000) / 10000;
+	                var top_left_lng = Math.round(app.map.topLeftCord.lng * 10000) / 10000;
 
-               	app.geofence = {
-					top_left_lat: top_left_lat,
-                	top_left_lng: top_left_lng,
-                	bottom_right_lat: bottom_right_lat,
-                	bottom_right_lng: bottom_right_lng,
-               	}
+	                var bottom_right_lat = Math.round(e.latlng.lat * 10000) / 10000;
+	                var bottom_right_lng = Math.round(e.latlng.lng * 10000) / 10000;
 
-                map.drawingBox = false;
-                map.enableDrawing = false;
-                map.dragging.enable();
+	                $('#partner-geofence-latlng').html('[' + top_left_lat + ', ' + top_left_lng + ', ' + bottom_right_lat + ', ' + bottom_right_lng);
 
-                // todo: enable the create button
-            }
-        });
+	               	app.geofence = {
+						top_left_lat: top_left_lat,
+	                	top_left_lng: top_left_lng,
+	                	bottom_right_lat: bottom_right_lat,
+	                	bottom_right_lng: bottom_right_lng,
+	               	}
 
+	                app.map.drawingBox = false;
+	                app.map.enableDrawing = false;
+	                app.map.dragging.enable();
+
+	                // todo: enable the create button
+	            }
+	        });
+
+    	}
 
 	},
 
@@ -380,7 +398,7 @@ var app = {
 				url: '/api/' + model + '/' + id,
 				type: 'GET',
 				success: function(resp) { success(resp); },
-				error: function() { failure(resp); }
+				error: function() { if ( failure != undefined ) { failure(resp); } }
 			});
 		},
 
@@ -389,7 +407,7 @@ var app = {
 				url: '/api/' + model + '?start=' + start + '&count=' + count,
 				type: 'GET',
 				success: function(resp) { success(resp); },
-				error: function(resp) { failure(resp); }
+				error: function(resp) { if ( failure != undefined ) { failure(resp); } }
 			});
 		},
 
@@ -401,7 +419,7 @@ var app = {
 				type: 'POST',
 				data: data,
 				success: function(resp) { success(resp); },
-				error: function(resp) { failure(resp); }
+				error: function(resp) { if ( failure != undefined ) { failure(resp); } }
 			});
 		},
 
@@ -411,7 +429,7 @@ var app = {
 				type: 'PUT',
 				data: JSON.stringify(thing),
 				success: function(resp) { success(resp); },
-				error: function(resp) { failure(resp); }
+				error: function(resp) { if ( failure != undefined ) { failure(resp); } }
 			});
 		},
 
@@ -439,9 +457,92 @@ var app = {
 	     	],
 
 	     	start: 0,
-	     	count: 50,
+	     	count: 5000,
 			collection: [],
 			single: {},
+
+			user_from_id: function(id) {
+
+				for(var index in app.models.users.collection) {
+					var user = app.models.users.collection[index];
+					console.log(user);
+					if (user.id == id) {
+						return user;
+					}
+				}
+				return null;
+
+			},
+
+			show_user_settings: function(id) {
+
+				var user = app.models.users.user_from_id(id);
+
+				app.models.users.single = user;
+
+				console.log('user:', user);
+
+				if ( user == null ) {
+					app.logout();
+				}
+
+				var html = '';
+
+				html += '<h4>' + user.first + ' ' + user.last + '</h4>';
+
+				html += '<label>First</label>';
+				html += '<input type="text" readonly value="' + user.first + '"></input>';
+
+				html += '<label>Last</label>';
+				html += '<input type="text" readonly value="' + user.last + '"></input>';
+
+				html += '<label>Email</label>';
+				html += '<input type="text" readonly value="' + user.email + '"></input>';
+
+				html += '<label>Last Login</label>';
+				html += '<input type="text" readonly value="' + user.last_login.split('.')[0] + '"></input>';
+
+				
+				if ( user.is_admin ) {
+					html +=' <input id="user-is-admin-checkbox" type="checkbox" value="" checked></input>';
+				} else {
+					html += '<input id="user-is-admin-checkbox" type="checkbox" value=""></input>';
+				}
+				html += '<label for="user-is-admin-checkbox">User is Administrator</label>';
+				html += '<i>note: only users with admin privileges can login to the admin interface</i>';
+
+				$('#user-settings-content').html(html);
+
+				$('#update-user-settings-button').off('click');
+				$('#update-user-settings-button').on('click', function() {
+					var user = app.models.users.single;
+					var is_admin = $('#user-is-admin-checkbox').is(':checked');
+					if ( user.is_admin != is_admin ) {
+						user.is_admin = is_admin;
+						console.log('updating user:')
+						console.log(user);
+						app.actions.update(
+							'users',
+							user.id,
+							user,
+							function(resp) {
+								$('#user-settings-modal').trigger('reveal:close');
+							}
+						);
+					}
+					else {
+						$('#user-settings-modal').trigger('reveal:close');
+					}
+				});
+
+				$('#user-settings-modal').reveal({
+					animation: 'fadeAndPop',
+					animationspeed: 300,
+					loseonbackgroundclick: true,
+					dismissmodalclass: 'update-user-settings-close'
+				});
+
+			},
 
 			refresh: function(callback) { 
 				console.log('users.refresh()');
@@ -480,7 +581,7 @@ var app = {
 								html += '<td>';
 								//html += '    <a id="edit-user-' + user.id + '" class="edit-link"><i class="fa fa-pencil"></i></a>';
 								//html += '    <a id="cancel-user-' + user.id + '"><i class="fa fa-trash"></i></a>';
-								html += '    <a id="info-user-' + user.id + '" class="info-link"><i class="fa fa-info"></i></a>';
+								html += '    <a id="' + user.id + '" class="user-settings-link"><i class="fa fa-gears"></i></a>';
 								html += '</td>';
 								html += '</tr>';
 							}
@@ -488,6 +589,13 @@ var app = {
 							html += '</table>'
 						}
 						$('#users-list').html(html);
+
+						$('.user-settings-link').off('click');
+						$('.user-settings-link').on('click', function() {
+							console.log('.user-settings-link, click().')
+							var id = this.id;
+							app.models.users.show_user_settings(id);
+						})
 
 						if ( callback != undefined )
 							callback();
@@ -661,6 +769,62 @@ var app = {
 			refresh: function() {
 			
 			},
+
+		},
+
+		// settings
+
+		'settings': {
+
+			refresh_legal: function() {
+				$.ajax({
+					url: '/api/users/legal',
+					type: 'GET',
+					success: function(resp) { 
+						console.log('app.models.settings.refresh_legal.success(), value = ' + resp.legal_notice); 
+						$('#legal-notice').html(resp.legal_notice);
+						tinymce.init({
+  							selector: 'textarea#legal-notice',
+  							menubar: false,
+  							//inline: true,
+  						});
+
+					},
+					error: function(resp) {
+						console.log('app.models.settings.refresh_legal.error()'); 
+						console.log(resp);
+					}
+				});	
+
+			},
+
+			update_legal: function() {
+				var value = tinyMCE.get('legal-notice').getContent();
+				console.log('New Legal Notice Value:' + value);
+				$.ajax({
+					url: '/api/users/legal',
+					type: 'PUT',
+					data: JSON.stringify({
+						value: value,
+					}),
+					success: function(resp) { 
+						console.log('app.models.settings.update_legal.success()'); 
+						alert('Legal Notice Updated Successfull.');
+						/*
+						var value = resp.value
+						$('#legal-notice').html(value);
+						tinymce.init({
+  							selector: 'textarea#legal-notice',
+  							menubar: false,
+  						});
+  						*/  
+					},
+					error: function(resp) {
+						console.log('app.models.settings.update_legal.error()'); 
+						console.log(resp);
+					}
+				});	
+			}
 
 		}
 	}

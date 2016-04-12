@@ -10,16 +10,30 @@ from .models import (
 upload_dir = './uploads'
 
 def get_payload(request):
-    try:
-        payload = request.json_body
+    bad_keys = []
+    #try:
+    if True:
+        try:
+            payload = request.json_body
+        except:
+            return None
+        if 'id' in payload:
+            del payload['id']
         for key in payload:
             if '_datetime' in key:
-                dt = datetime.datetime.strptime(payload[key], '%m/%d/%Y')
-                payload[key] = dt
+                try:
+                    dt = datetime.datetime.strptime(payload[key], '%m/%d/%Y')
+                    payload[key] = dt
+                except:
+                    bad_keys.append(key)
             elif '_id' in key:
                 payload[key] = payload[key].replace('-','')
-    except:
-        payload = None
+    #except:
+    #    payload = None
+
+    for bad_key in bad_keys:
+        del payload[bad_key]
+
     print(payload)
     return payload
 
@@ -32,8 +46,8 @@ def build_paging(request):
             start = int(float(request.GET['start']))
             count = int(float(request.GET['count']))
             # prevent too much server thrashing ...
-            if count > 1000:
-                count = 1000
+            if count > 5000:
+                count = 5000
         except:
             start = 0
             count = 50

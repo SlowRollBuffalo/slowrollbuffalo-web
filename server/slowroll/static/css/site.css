@@ -1,4 +1,12 @@
 
+#page-wrapper p {
+	color: rgba(48, 106, 189, 1);
+}
+
+#page-wrapper h2 {
+	color: rgba(242, 48, 12, 1);
+}
+
 a {
 	cursor: pointer;
 }
@@ -7,6 +15,30 @@ label {
 	margin-bottom: 0em !important;
 }
 
+
+#banner h2 {
+	color: rgba(250, 250, 250, 1);
+	font-size: 3.5em;
+}
+
+#banner p {
+	/*color: rgba(48, 106, 189, 1);	*/
+	font-size: 2em;
+	padding-top: 1rem;
+	color: #EEE;
+}
+
+.red {
+	color: rgba(242, 48, 12, 1);
+}
+
+.blue {
+	color: rgba(48, 106, 189, 1);
+}
+
+.white {
+	color: rgba(254, 254, 254, 1);	
+}
 
 .hasDatepicker {
 	width: 100% !important;
@@ -17,15 +49,15 @@ label {
 }
 
 #google-icon {
-	/*zoom: 70% !important;*/
-	width: 375px;
+	max-width: 220px;
 	height: auto;
-	margin-right: 2rem;
+	/*margin-right: 2rem;*/
+	margin-bottom: 2rem;
 }
 
+
 #ios-icon {
-	/*zoom:70% !important;*/
-	width: 420px;
+	width: 220px;
 	height: auto;	
 }
 
@@ -69,6 +101,7 @@ label {
 .frontpage-banner {
 	padding: 12em 0 14em 0 !important;
 	background-position: 0 -200px !important; 
+	background-color: #FFF !important;
 }
 
 .page {
@@ -238,4 +271,47 @@ button {
     */
     border: 2px solid #e89980 !important;
     background: rgba(255, 0, 0, .3) !important;
+}
+
+.reveal-modal {
+	background: #FEFEFE !important;
+}
+
+.reveal-modal input[type="text"] {
+	width: 100%;
+	text-align: center;
+}
+
+.reveal-modal label {
+	width: 100%;
+	text-align: center;
+}
+
+#user-settings-content i {
+	margin-top: 1rem;
+	font-size: 75%;
+}
+
+#user-settings-content {
+	margin-bottom: 2rem;
+}
+
+#user-settings-content label {
+	margin-top: 1rem;
+	margin-bottom: 1rem !important;
+}
+
+.legal-notice-editor-wrapper {
+	width: 100%;
+	padding-left: 2rem;
+	/*padding-right: 2rem;*/
+	margin-bottom: 2rem;
+}
+
+#legal-notice {
+	height: 300px;
+}
+
+#legal-notice-update-button {
+	margin-top: 2rem;
 }

@@ -47,6 +47,17 @@ class CreationMixin():
 
     @classmethod
     def add(cls, **kwargs):
+
+        ####################################################
+        # remove any keys in the payload that don't belong
+        bad_keys = []
+        for key in kwargs:
+            if not key in cls.__dict__:
+                bad_keys.append(key)
+        for key in bad_keys:
+            del kwargs[key]
+        ####################################################
+
         thing = cls(**kwargs)
         if thing.id is None:
             thing.id = str(uuid4())
@@ -87,6 +98,17 @@ class CreationMixin():
 
     @classmethod
     def update_by_id(cls, id, **kwargs):
+
+        ####################################################
+        # remove any keys in the payload that don't belong
+        bad_keys = []
+        for key in kwargs:
+            if not key in cls.__dict__:
+                bad_keys.append(key)
+        for key in bad_keys:
+            del kwargs[key]
+        ####################################################
+
         keys = set(cls.__dict__)
         thing = DBSession.query(cls).filter(cls.id==id).first() #cls.get_by_id(id)
         if thing is not None:

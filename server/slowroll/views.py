@@ -199,20 +199,48 @@ class RegisterAPI(object):
         return resp
 
 
-@view_defaults(route_name='/api/users/legal')
+@view_defaults(route_name='/api/users/legal', renderer='json')
 class Legal(object):
+
+    req = (
+        'value'
+    )
 
     def __init__(self, request):
         self.request = request
-        self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+        #self.request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
         self.user = authenticate(request)
         self.payload = get_payload(request)
 
-    @view_config(request_method='GET', renderer='json')
+    @view_config(request_method='GET')
     def get(self):
+        print('\n\nLEGAL NOTICE [GET]\n\n')
         legal_notice = Settings.get_setting_value('legal_notice')
         resp = {'legal_notice': legal_notice}
+        #print('\n\n')
+        #print(legal_notice)
+        #print('\n\n')
         return resp 
+
+    #[ PUT ]
+    @view_config(request_method='PUT')
+    def put(self):
+        print('\n\nLEGAL NOTICE [PUT]')
+        print(self.payload)
+        print('\n\n')
+        resp = {}
+        if self.user and self.user.is_admin:
+            legal_notice_setting = Settings.get_by_name('legal_notice')
+            if legal_notice_setting and self.payload and 'value' in self.payload:
+                Settings.update_by_id(
+                    legal_notice_setting.id,
+                    value=self.payload['value'],
+                )
+            else:
+                self.request.response.status = 400
+        else:
+            self.request.response.status = 403
+        return resp
 
 @view_defaults(route_name='/validate')
 class Validate(object):
@@ -293,6 +321,51 @@ class UsersAPI(object):
             self.request.response.status = 403
         return resp
 
+@view_defaults(route_name='/api/users/{id}', renderer='json')
+class UserAPI(object):
+
+    req = {
+        'first',
+        'last',
+        'email',
+        #'password',
+        'is_admin',
+    }
+
+    def __init__(self, request):
+        self.request = build_request(request)
+        self.start, self.count = build_paging(request)
+        self.user = authenticate(request)
+        self.payload = get_payload(request)
+
+    #[ PUT ]
+    @view_config(request_method='PUT')
+    def get(self):
+        resp = {}
+        if self.user and self.user.is_admin:
+            print('\n\n')
+            print(self.payload)
+            print(self.req)
+            print('\n\n')
+            if self.payload and all(r in self.payload for r in self.req):
+                _id = self.request.matchdict['id'].replace('-','')
+                user = Users.update_by_id(
+                    _id,
+                    first=self.payload['first'],
+                    last=self.payload['last'],
+                    email=self.payload['email'],
+                    is_admin=self.payload['is_admin'],
+                )
+                if user:
+                    resp = user.to_dict()
+                else:
+                    # nothing good ...
+                    pass
+            else:
+                self.request.response.status = 400
+        else:
+            self.request.response.status = 403
+        return resp
 
 @view_defaults(route_name='/api/partners', renderer='json')
 class PartnersAPI(object):
@@ -367,7 +440,7 @@ class PartnerAPI(object):
     def get(self):
         resp = {}
         if self.user and self.user.is_admin:
-            _id = self.request.matchdict['id']
+            _id = self.request.matchdict['id'].replace('-','')
             partner = Partners.get_by_id(_id)
             if partner:
                 resp = partners.to_dict()
@@ -383,7 +456,7 @@ class PartnerAPI(object):
         resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                _id = self.request.matchdict['id'],
+                _id = self.request.matchdict['id'].replace('-',''),
                 partner = Partners.update(_id, **self.payload)
                 if partner:
                     resp = partner.to_dict()
@@ -464,7 +537,7 @@ class RideAPI(object):
     def get(self):
         resp = {}
         if self.user and self.user.is_admin:
-            _id = self.request.matchdict['id']
+            _id = self.request.matchdict['id'].replace('-','')
             ride = Rides.get_by_id(_id)
             if ride:
                 resp = ride.to_dict()
@@ -480,7 +553,7 @@ class RideAPI(object):
         resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                _id = self.request.matchdict['id']
+                _id = self.request.matchdict['id'].replace('-','')
                 ride = Rides.update(_id, **self.payload)
                 if ride:
                     resp = ride.to_dict()
@@ -562,7 +635,7 @@ class CheckinAPI(object):
     def get(self):
         resp = {}
         if self.user and self.user.is_admin:
-            _id = self.request.matchdict['id']
+            _id = self.request.matchdict['id'].replace('-','')
             checkins = Checkins.get_by_id(_id)
             if checkins:
                 resp = checkins.to_dict()
@@ -578,7 +651,7 @@ class CheckinAPI(object):
         resp = {'checkin': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                _id = self.request.matchdict['id'],
+                _id = self.request.matchdict['id'].replace('-',''),
                 checkin = Checkins.update(_id, **self.payload)
                 if checkin:
                     resp = {'checkin': checkin.to_dict()}

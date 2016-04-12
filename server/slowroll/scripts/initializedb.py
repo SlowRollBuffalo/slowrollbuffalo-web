@@ -15,6 +15,7 @@ from ..models import (
     DBSession,
     Base,
     Users,
+    Settings,
     )
 
 import hashlib
@@ -43,4 +44,12 @@ def main(argv=sys.argv):
         last = 'USER',
         email = 'system',
         password = hashlib.sha256('password'.encode('utf-8')).hexdigest(),
+    )
+
+    # need to add the legel notice, since the REST API only implements
+    # GET and PUT
+    Settings.add(
+        name='legal_notice',
+        value='Legal Notice',
+        content_type='text',
     )

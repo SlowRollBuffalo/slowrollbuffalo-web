@@ -17,18 +17,19 @@
 
             <!-- Header -->
                 <header id="header" class="alt">
-                    <h1>SlowRoll: Buffalo</h1>
+                    <h1>Slow Roll Buffalo</h1>
                 </header>
 
             <!-- Banner -->
                 <section id="banner" class="frontpage-banner">
-                    <h2>SlowRoll: Buffalo</h2>
+                    <h2>Slow Roll Buffalo</h2>
                     <p>Bicycle with neighbors through the city of good neighbors.</p>
                     <ul class="actions">
                         <!--<li><a href="#" class="button special">Sign Up</a></li>-->
                         <!--<li><a href="#" class="button">Learn More</a></li>-->
-                        <img id="google-icon" src="static/images/googleplay_icon.png"></img>
-                        <img id="ios-icon" src="static/images/ios_app_icon.png"></img>
+                        <img id="google-icon" src="static/images/google-play-badge.png"></img>
+                        </br>
+                        <img id="ios-icon" src="static/images/Get_it_on_iTunes_Badge_US_1114.svg"></img>
                     </ul>
                 </section>
 
@@ -37,8 +38,8 @@
 
                     <section class="box special">
                         <header class="major">
-                            <h2>What is SlowRoll?</h2>
-                            <p>Founded in Detroit, Slow Roll is a group bicycle ride that meets every Monday night and has expanded into a Global network of community rides. Each week we meet at different venues and take a unique route throughout the city, including all the major and minor neighborhoods that we are so proud of. Slow Roll is for everyone; all ages, all skill levels and every type of bike is welcome. Bicycle through Buffalo with 500 of your new best friends! Our slow pace keeps the group safe and gives riders a unique perspective of our great city and its neighborhoods. Minors under 18 must be accompanied by a parent/guardian.</p>
+                            <h2>What is SlowRoll Buffalo?</h2>
+                            <p>Founded in Detroit, Slow Roll Buffalo is a group bicycle ride that meets every Monday night and has expanded into a Global network of community rides. Each week we meet at different venues and take a unique route throughout the city, including all the major and minor neighborhoods that we are so proud of. Slow Roll is for everyone; all ages, all skill levels and every type of bike is welcome. Bicycle through Buffalo with 500 of your new best friends! Our slow pace keeps the group safe and gives riders a unique perspective of our great city and its neighborhoods. Minors under 18 must be accompanied by a parent/guardian.</p>
                         </header>
                     </section>
 
@@ -55,7 +56,7 @@
                             </div>
                             <!--
                             <div class="6u 12u(narrower)">
-                                <h3>SlowRoll code of conduct</h3>
+                                <h3>SlowRoll Buffalo code of conduct</h3>
                                 <ol>
                                     <li>#SQUAD is king</li>
                                     <li>Come prepared</li>
@@ -103,7 +104,7 @@
                     </section>
 
 	                <section class="box special">
-						<iframe width="789" height="444" src="https://www.youtube.com/embed/JklTTYZcVWg" frameborder="0" allowfullscreen></iframe>
+						<iframe width="100%" height="444" src="https://www.youtube.com/embed/JklTTYZcVWg" frameborder="0" allowfullscreen></iframe>
 	                </section>
                 </section>
 
@@ -143,7 +144,7 @@
                         <!--<li><a href="#" class="icon fa-google-plus"><span class="label">Google+</span></a></li>-->
                     </ul>
                     <ul class="copyright">
-                        <li>&copy; SlowRoll Buffalo. All rights reserved.</li>
+                        <li>&copy; SlowRoll Buffalo Buffalo. All rights reserved.</li>
                     </ul>
                 </footer>
 
@@ -151,7 +152,7 @@
 
         <!-- Scripts -->
             <script src="static/js/jquery.min.js"></script>
-            <script src="static/js/jquery.dropotron.min.js"></script>
+            <!--<script src="static/js/jquery.dropotron.min.js"></script>-->
             <script src="static/js/jquery.scrollgress.min.js"></script>
             <script src="static/js/skel.min.js"></script>
             <script src="static/js/util.js"></script>
