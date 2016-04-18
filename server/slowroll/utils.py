@@ -70,9 +70,9 @@ def authenticate(request):
 
 
 def build_request(request):
-    request.response.content_type = 'application/json'
-    request.response.charset = 'utf8'
-    request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
+    #request.response.content_type = 'application/json'
+    #request.response.charset = 'utf8'
+    #request.response.headerlist.append(('Access-Control-Allow-Origin', '*'))
     return request
 
 def send_registration_email(config, user):
