@@ -151,6 +151,7 @@ class UserLoginAPI(object):
         'email',
         'password',
         'platform',
+        'version',
     )
 
     def __init__(self, request):

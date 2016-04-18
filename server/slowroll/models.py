@@ -161,6 +161,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
     token = Column(UnicodeText, nullable=True)
     token_expire_datetime = Column(DateTime, nullable=True)
     platform = Column(UnicodeText, nullable=False)
+    version = Column(UnicodeText, nullable=False)
     last_login = Column(DateTime, nullable=True)
     temporary = Column(Boolean, nullable=False)
 
@@ -185,6 +186,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
                 user.token=None,
                 user.token_expire_datetime=None,
                 user.platform='',
+                user.version='',
                 user.temporary=False,
                 DBSession.add(user)
                 DBSession.commit();
@@ -205,6 +207,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
                 token=None,
                 token_expire_datetime=None,
                 platform='',
+                version='',
                 temporary=temporary,
             )
         return user

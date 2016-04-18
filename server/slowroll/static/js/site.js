@@ -327,7 +327,8 @@ var app = {
             data: JSON.stringify({
                 email: email,
                 password: password,
-                platform: 'web'
+                platform: 'web',
+                version: '1.0.0.',
             }),
             success: function(resp) {success(resp); },
             error: function(resp) { failure(resp); }
