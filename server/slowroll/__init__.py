@@ -56,6 +56,8 @@ def main(global_config, **settings):
     config.add_route('/validate', '/validate')
     config.add_route('/admin', '/admin')
 
+    config.add_route('/checkin', '/checkin')
+
     config.add_route('/checkins', '/checkins')
 
     config.add_route('/api/users/login', '/api/users/login')

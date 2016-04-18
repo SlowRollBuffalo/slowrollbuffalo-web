@@ -44,6 +44,7 @@ class TimeStampMixin(object):
 class CreationMixin():
 
     id = Column(UUIDType(binary=False), primary_key=True, unique=True)
+    deleted = Column(Boolean, nullable=True)
 
     @classmethod
     def add(cls, **kwargs):
@@ -61,6 +62,7 @@ class CreationMixin():
         thing = cls(**kwargs)
         if thing.id is None:
             thing.id = str(uuid4())
+        thing.deleted = False
         DBSession.add(thing)
         DBSession.commit()
         return thing
@@ -69,6 +71,8 @@ class CreationMixin():
     def get_all(cls):
         things = DBSession.query(
             cls,
+        ).filter(
+            cls.deleted == False,
         ).all()
         return things
 
@@ -76,6 +80,8 @@ class CreationMixin():
     def get_paged(cls, start=0, count=25):
         things = DBSession.query(
             cls,
+        ).filter(
+            cls.deleted == False,
         ).slice(start, start+count).all()
         return things
 
@@ -92,7 +98,9 @@ class CreationMixin():
     def delete_by_id(cls, id):
         thing = cls.get_by_id(id)
         if thing is not None:
-            DBSession.delete(thing)
+            #DBSession.delete(thing)
+            thing.deleted = True
+            DBSession.add(thing)
             DBSession.commit()
         return thing
 
@@ -154,29 +162,51 @@ class Users(Base, TimeStampMixin, CreationMixin):
     token_expire_datetime = Column(DateTime, nullable=True)
     platform = Column(UnicodeText, nullable=False)
     last_login = Column(DateTime, nullable=True)
+    temporary = Column(Boolean, nullable=False)
 
     @classmethod
-    def create_new_user(cls, first, last, email, password, is_admin=False):
-        user = Users.get_by_email(email)
-        if user:
-            return None
+    def create_new_user(cls, first, last, email, password, is_admin=False, temporary=False):
+        
+        # generate pass salt and hash
         salt_bytes = hashlib.sha256(str(uuid4()).encode('utf-8')).hexdigest()
         pass_bytes = hashlib.sha256(password.encode('utf-8')).hexdigest()
         pass_val = pass_bytes + salt_bytes
         pass_hash = hashlib.sha256(pass_val.encode('utf-8')).hexdigest()
-        user = Users.add(
-            is_admin = is_admin,
-            first = first,
-            last = last,
-            email = email,
-            pass_salt = salt_bytes,
-            pass_hash = pass_hash,
-            validation_token = hashlib.sha256(str(uuid4()).encode('utf-8')).hexdigest(),
-            validated = False,
-            token = None,
-            token_expire_datetime = None,
-            platform = '',
-        )
+
+        user = Users.get_by_email(email)
+        if user:
+            if user.temporary:
+                # user exists, but it was a temp login for checkin via the
+                # web interface.  we need to update with a valid password
+                user.pass_salt = pass_salt
+                user.pass_hash = pass_hash
+                user.validation_token=hashlib.sha256(str(uuid4()).encode('utf-8')).hexdigest(),
+                user.validated=False,
+                user.token=None,
+                user.token_expire_datetime=None,
+                user.platform='',
+                user.temporary=False,
+                DBSession.add(user)
+                DBSession.commit();
+            else:
+                # user already exists
+                return None
+        else:
+            # create new user
+            user = Users.add(
+                is_admin=is_admin,
+                first=first,
+                last=last,
+                email=email,
+                pass_salt=salt_bytes,
+                pass_hash=pass_hash,
+                validation_token=hashlib.sha256(str(uuid4()).encode('utf-8')).hexdigest(),
+                validated=False,
+                token=None,
+                token_expire_datetime=None,
+                platform='',
+                temporary=temporary,
+            )
         return user
 
     @classmethod
@@ -356,6 +386,8 @@ class Rides(Base, TimeStampMixin, CreationMixin):
             ).filter(
                 Checkins.ride_id == Rides.id,
             ).label('checkin_count'),
+        ).filter(
+            cls.deleted == False,
         ).outerjoin(
             Partners, Partners.id == Rides.sponsor_id,
         ).order_by(
@@ -385,6 +417,7 @@ class Checkins(Base, TimeStampMixin, CreationMixin):
     __tablename__ = 'checkins'
     ride_id = Column(ForeignKey('rides.id'), nullable=False)
     user_id = Column(ForeignKey('users.id'), nullable=False)
+    platform = Column(UnicodeText, nullable=False)
     #accepts_terms = Column(Boolean, nullable=False)    
 
     @classmethod

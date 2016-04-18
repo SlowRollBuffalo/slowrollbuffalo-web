@@ -68,6 +68,40 @@ class Login(object):
         return {}
 
 
+@view_defaults(route_name='/checkin')
+class Checkin(object):
+    
+    def __init__(self, request):
+        self.request = request
+    
+    @view_config(request_method='GET', renderer='templates/checkin.mak')
+    def get(self):
+        return {}
+
+    @view_config(request_method='POST', renderer='json')
+    def post(self):
+        resp = {}
+        if 'ride_id' in self.request.GET:
+            ride_id = self.request.GET['ride_id']
+            user = Users.create_new_user(
+                first=payload['first'],
+                last=payload['last'],
+                email=payload['email'],
+                password=hashlib.sha256(str(uuid4()).encode('utf-8')).hexdigest(), # random string
+                is_admin=False,
+                temporary=True,
+            )
+            Checkin.add(
+                ride_id=ride_id,
+                user_id=user.id,
+                platform='webform',
+            )
+        else:
+            return HTTPFound(location='/')
+
+        return resp
+
+
 @view_defaults(route_name='/checkins')
 class CheckinsPrintablePage(object):
 
@@ -602,6 +636,22 @@ class RideAPI(object):
             self.request.response.status = 403
         return resp
 
+    # [ DELETE ]
+    @view_config(request_method='DELETE')
+    def post(self):
+        resp = {}
+        if self.user and self.user.is_admin:
+            _id = self.request.matchdict['id'].replace('-','')
+            ride = Rides.delete_by_id(_id)
+            if ride:
+                resp = ride.to_dict()
+            else:
+                # nothing good ...
+                pass
+        else:
+            self.request.response.status = 403
+        return resp
+
 
 @view_defaults(route_name='/api/checkins', renderer='json')
 class CheckinsAPI(object):
@@ -626,7 +676,7 @@ class CheckinsAPI(object):
                     for checkin, user in _checkins:
                         resp.append(dict(
                             checkin=checkin.to_dict(),
-                            user=userc.to_dict(),
+                            user=user.to_dict(),
                         ))
                 #else:
                 #    self.request.response.status = 404
@@ -646,13 +696,16 @@ class CheckinsAPI(object):
         print('checkins.POST()')
         resp = {}
         if self.user:
+            print('\n\nCheckinsAPI [POST]\n\n')
             print('if self.user:')
             print(self.payload)
             print(self.req)
+            print('\n----\n')
             if self.payload and all(r in self.payload for r in self.req):
                 print('if self.payload and all(r in self.payload for r in self.req):')
                 self.payload.update(
                     user_id=self.user.id,
+                    platform='api',
                 )
                 checkin = Checkins.add(**self.payload)
                 if checkin:

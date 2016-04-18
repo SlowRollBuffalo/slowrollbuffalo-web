@@ -283,7 +283,7 @@ button {
 }
 
 .reveal-modal label {
-	width: 100%;
+	/*width: 100%;*/
 	text-align: center;
 }
 
@@ -318,4 +318,20 @@ button {
 
 .ride-today-row {
 	background: rgba(0,255,0,.2);
+}
+
+#checkin-bad-accept-terms {
+	display: none;
+	box-shadow: 0 0 0 2px #e89980;
+    border: 2px solid #e89980;
+    background: rgba(255, 0, 0, .2);
+    margin-top: .5rem;
+    margin-bottom: 1rem;
+    padding: .25rem;
+    width: 100%;
+}
+
+#ride-checkins-list-table {
+	height: 600px;
+	overflow-y: scroll;
 }

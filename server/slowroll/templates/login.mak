@@ -39,6 +39,7 @@
 
                     <section class="box special">
                         <header class="major">
+                        	<h3>Please Login</h3>
                        		<label class="dark">Email</label>
 							<input id="login-email" type="text"></input>
 							<label class="dark">Password</label>

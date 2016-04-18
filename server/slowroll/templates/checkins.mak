@@ -11,11 +11,6 @@
 		padding: 0;
 	}
 
-	/*.page-wrapper {
-		width: 800px;
-		margin: auto;
-	}*/
-
 	table {
 		width: 100%;
 	}
@@ -28,8 +23,11 @@
 	<div class="page-wrapper">
 		<div class="row">
 			<div class="columns large-12">
-				<h2>${ride.title}</h2>
-				<p>Report Generated: ${now}</p>
+				<br/><br/>
+				<h3>Ride Checkin Report</h3>
+				<p>Ride Name: <b>${ride.title}</b></p>
+				<p>Ride Date: <b>${ride.ride_datetime}</b></p>
+				<p>Report Generated: <b>${now}</b></p>
 				<h5>Ride Checkins:</h5>
 				<table>
 					<thead>
@@ -46,7 +44,7 @@
 							<td>${user.last}</td>
 							<td>${user.first}</td>
 							<td>${user.email}</td>
-							<td>${checkin.creation_datetime.split('.'[0])}</td>
+							<td>${str(checkin.creation_datetime).split('.')[0]}</td>
 						</tr>
 					%endfor
 					</tbody>

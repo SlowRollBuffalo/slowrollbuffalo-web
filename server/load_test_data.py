@@ -134,7 +134,7 @@ def load_checkins(roken, rides, users):
     print('# Loading Checkins')
     print('########################################')
 
-    fields = ('race_id', 'user_id', 'accepts_terms')
+    fields = ('ride_id', 'user_id', 'accepts_terms')
 
     #print(rides)
     #print(users)

@@ -284,6 +284,23 @@ var app = {
 			}
 		});
 
+		$('#cancel-ride').on('click', function() {
+			var ride = self.app.models.rides.single.ride;
+			//remove: function(model, thing, success, failure) {
+			app.actions.remove(
+				'rides',
+				ride.id,
+				function(resp) {
+					alert('The ride has been cancelled Successfully.');
+					$('#modal-ride-delete').trigger('reveal:close');
+					app.display_page('rides');
+				},
+				function() {
+					// herm ...
+				}
+			);
+		});
+
 		console.log('app.init() complete.');
 	},
 
@@ -543,7 +560,7 @@ var app = {
 			});
 		},
 
-		remove: function(model, thing, success, failure) {
+		remove: function(model, id, success, failure) {
 			$.ajax({
 				url: '/api/' + model + '/' + id,
 				type: 'DELETE',
@@ -977,7 +994,7 @@ var app = {
 								html += '<td>' + checkin_count + ' <a id="' + ride.id + '" class="ride-checkin-report-button"><i class="fa fa-question"></i></a></td>';
 								html += '<td>';
 								html += '    <a id="' + ride.id + '" class="edit-link edit-ride-link"><i class="fa fa-pencil"></i></a>';
-								html += '    <a id="cancel-ride-' + ride.id + '"><i class="fa fa-trash"></i></a>';
+								html += '    <a id="' + ride.id + '" class="delete-ride-link"><i class="fa fa-trash"></i></a>';
 								html += '</td>';
 								html += '</tr>';
 							}
@@ -1016,6 +1033,33 @@ var app = {
 							app.models.rides.edit_mode = true;
 
 						});
+
+						$('.delete-ride-link').off('click');
+						$('.delete-ride-link').on('click', function() {
+
+							console.log('.delete-ride-link, click().')							
+							var id = this.id;
+
+							app.models.rides.single = app.models.rides.ride_from_id(id);
+							
+							var ride = app.models.rides.ride_from_id(id).ride;
+
+							var html = '';
+
+							html += '<h4>Are you sure you want to cancel this ride?</span></h4>';
+					     	html += '<span>Ride: <b>' + ride.title + '</b></span><br/>';
+					     	html += '<span>Date: <b>' + ride.ride_datetime + '</b></span><br/>';
+
+					     	$('#modal-ride-delete-details').html(html);
+
+					     	$('#modal-ride-delete').reveal({
+								animation: 'fadeAndPop',
+								animationspeed: 300,
+								loseonbackgroundclick: true,
+								dismissmodalclass: 'modal-ride-delete-cancel'
+							});
+
+					    });
 
 						if ( callback != undefined )
 							callback();
@@ -1065,15 +1109,22 @@ var app = {
 
 						} else {
 
-							html += '<table>';
+							html += '<div id="ride-checkins-list-table"><table>';
 							html += '<thead>';
-							html += '<tr><th></td></tr>';
+							html += '<tr><th>Last</th><th>First</th><th>Email</th></tr>';
 							html += '</thead>'
+							html += '<tbody>';
 							for(var i=0; i<checkins.length; i++) {
-								var checkin = checkins[i];
-
+								var checkin = checkins[i].checkin;
+								var user = checkins[i].user;
+								html += '<tr>';
+								html += '<td>' + user.last + '</td><td>' + user.first + '</td><td>' + user.email + '</td>';
+								html += '</tr>';
 							}
-							html += '</table>';
+							html += '</tbody>';
+							html += '</table></div>';
+
+							console.log('Checkin HTML: \n' + html);
 
 						}
 
