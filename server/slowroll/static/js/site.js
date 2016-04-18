@@ -1,4 +1,13 @@
 
+// taken from:
+//   http://stackoverflow.com/a/3067896
+Date.prototype.yyyymmdd = function() {
+	var yyyy = this.getFullYear().toString();
+	var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
+	var dd  = this.getDate().toString();
+	return yyyy + (mm[1]?mm:"0"+mm[0]) + (dd[1]?dd:"0"+dd[0]); // padding
+};
+
 var app = {
 
 	init: function() {
@@ -10,8 +19,8 @@ var app = {
 		$('#page-nav-link-settings').on('click', function() { app.display_page('settings'); } );
 		$('#page-nav-link-logout').on('click', function() { app.display_page('logout'); } );
 
-		$('#cancel-new-ride').on('click', function() { app.display_page('rides'); });
-		$('#cancel-new-partner').on('click', function() { app.display_page('partners'); });
+		$('#cancel-new_edit-ride').on('click', function() { app.display_page('rides'); });
+		$('#cancel-new_edit-partner').on('click', function() { app.display_page('partners'); });
 
 		$('#legal-notice-update-button').on('click', function() { app.models.settings.update_legal(); });
 
@@ -23,33 +32,33 @@ var app = {
 		app.models['rides'].refresh();
 
 		// connect creating a new ride modal
-		$('#open-new-ride-modal').on('click', function() {
+		$('#open-new_edit-ride-page').on('click', function() {
 			/*
 			app.populate_sponsors_list();
-			$('#modal-new-ride').reveal({
+			$('#modal-new_edit-ride').reveal({
     			animation: 'fadeAndPop',
     			animationspeed: 250,
     			closeonbackgroundclick: true,
-    			dismissmodalclass: 'modal-new-ride-cancel'
+    			dismissmodalclass: 'modal-new_edit-ride-cancel'
     		});
     		*/
-    		app.display_page('new-ride');
+    		app.display_page('new_edit-ride');
 		})
 
 		// connect date picker
-		$('#new-ride-ride_datetime').datepicker();
+		$('#new_edit-ride-ride_datetime').datepicker();
 
 		// connect create new ride button in modal
-		$('#create-new-ride').on('click', function() {
+		$('#create-new_edit-ride').on('click', function() {
 			
-			var title = $('#new-ride-title').val();
-			var description = $('#new-ride-description').val();
-			var ride_datetime = $('#new-ride-ride_datetime').val();
-			var address_0 = $('#new-ride-address_0').val();
-			var city = $('#new-ride-city').val();
-			var state = $('#new-ride-state').val();
-			var zipcode = $('#new-ride-zipcode').val();
-			var sponsor_id = $('#new-ride-sponsor_id').val();
+			var title = $('#new_edit-ride-title').val();
+			var description = $('#new_edit-ride-description').val();
+			var ride_datetime = $('#new_edit-ride-ride_datetime').val();
+			var address_0 = $('#new_edit-ride-address_0').val();
+			var city = $('#new_edit-ride-city').val();
+			var state = $('#new_edit-ride-state').val();
+			var zipcode = $('#new_edit-ride-zipcode').val();
+			var sponsor_id = $('#new_edit-ride-sponsor_id').val();
 
 			var data = {
 				'title': title,
@@ -67,7 +76,7 @@ var app = {
 			for( var key in data ) {
 				if ( data[key] == '' ) {
 					console.log('bad input: ' + key)
-					$('#new-ride-' + key).addClass('bad-input');
+					$('#new_edit-ride-' + key).addClass('bad-input');
 					bad_input = true;
 				}
 			}
@@ -76,32 +85,60 @@ var app = {
 			if ( bad_input ) {
 				$("html, body").animate({ scrollTop: 0 });
 				//alert('Please check your inputs, and try again.');
-				$('#new-ride-bad-iputs').show();
+				$('#new_edit-ride-bad-iputs').show();
 			}
 			else {
 
 				// hack
 				data['address_1'] = '';
 
-				app.actions.create(
-					'rides',
-					data,
-					function(resp) {
-						//$('#modal-new-ride').trigger('reveal:close');
-						app.models['rides'].refresh(function() {
-							app.display_page('rides');	
-						});
-					},
-					function(resp) { 
-						console.log('create_new_ride: error');
-						console.log(resp);
-						if ( resp.status == 400 ) {
-							// missing information
-						}
+				if ( app.models.rides.edit_mode == false ) {
 
-						//window.location = '/login';
-					}
-				);
+					app.actions.create(
+						'rides',
+						data,
+						function(resp) {
+							//$('#modal-new_edit-ride').trigger('reveal:close');
+							app.models['rides'].refresh(function() {
+								app.display_page('rides');	
+							});
+						},
+						function(resp) { 
+							console.log('create_new_ride: error');
+							console.log(resp);
+							if ( resp.status == 400 ) {
+								// missing information
+							}
+
+							//window.location = '/login';
+						}
+					);
+
+				} else {
+
+					app.actions.update(
+						'rides',
+						app.models.rides.single.ride.id,
+						data,
+						function(resp) {
+							//$('#modal-new_edit-ride').trigger('reveal:close');
+							app.models['rides'].refresh(function() {
+								app.display_page('rides');	
+							});
+						},
+						function(resp) { 
+							console.log('create_new_ride: error');
+							console.log(resp);
+							if ( resp.status == 400 ) {
+								// missing information
+							}
+
+							//window.location = '/login';
+						}
+					);
+
+
+				}
 
 			}
 		});
@@ -114,38 +151,38 @@ var app = {
 		app.models['partners'].refresh();
 
 		// connect creating a new partner modal
-		$('#open-new-partner-modal').on('click', function() {
+		$('#open-new_edit-partner-page').on('click', function() {
 			/*
-			$('#modal-new-partner').reveal({
+			$('#modal-new_edit-partner').reveal({
     			animation: 'fadeAndPop',
     			animationspeed: 250,
     			closeonbackgroundclick: true,
-    			dismissmodalclass: 'modal-new-partner-cancel'
+    			dismissmodalclass: 'modal-new_edit-partner-cancel'
     		});
     		*/
-    		app.display_page('new-partner');
+    		app.display_page('new_edit-partner');
 
     		// init the map for partner geo fence
 			app.init_geofence_map();
 		})
 
 		// connect date picker
-		//$('#new-partner-ride_datetime').datepicker();
+		//$('#new_edit-partner-ride_datetime').datepicker();
 
 		// connect create new partner button in modal
-		$('#create-new-partner').on('click', function() {
+		$('#create-new_edit-partner').on('click', function() {
 			
-			var name = $('#new-partner-name').val();
-			var description = $('#new-partner-description').val();
-			var notification_text = $('#new-partner-notification_text').val();
-			var address_0 = $('#new-partner-address_0').val();
-			var city = $('#new-partner-city').val();
-			var state = $('#new-partner-state').val();
-			var zipcode = $('#new-partner-zipcode').val();
-			var fence_top_left_lat = '';
-			var fence_top_left_lng = '';
-			var fence_bottom_right_lat = '';
-			var fence_bottom_right_lng = '';
+			var name = $('#new_edit-partner-name').val();
+			var description = $('#new_edit-partner-description').val();
+			var notification_text = $('#new_edit-partner-notification_text').val();
+			var address_0 = $('#new_edit-partner-address_0').val();
+			var city = $('#new_edit-partner-city').val();
+			var state = $('#new_edit-partner-state').val();
+			var zipcode = $('#new_edit-partner-zipcode').val();
+			var fence_top_left_lat = 0;
+			var fence_top_left_lng = 0;
+			var fence_bottom_right_lat = 0;
+			var fence_bottom_right_lng = 0;
 
 			if ( app.geofence != undefined ) {
 				fence_top_left_lat = app.geofence.top_left_lat;
@@ -173,15 +210,15 @@ var app = {
 			for( var key in data ) {
 				if ( data[key] == '' ) {
 					console.log('bad input: ' + key)
-					$('#new-partner-' + key).addClass('bad-input');
+					$('#new_edit-partner-' + key).addClass('bad-input');
 					bad_input = true;
 				}
 			}
 
-			if ( fence_top_left_lat == '' || fence_top_left_lng == '' || 
-				 fence_bottom_right_lat == '' || fence_bottom_right_lat == '' )
+			if ( fence_top_left_lat == 0 || fence_top_left_lng == 0 || 
+				 fence_bottom_right_lat == 0 || fence_bottom_right_lat == 0 )
 			{
-				$('#new-partner-bad-geofence').show();
+				$('#new_edit-partner-bad-geofence').show();
 				bad_input = true;
 			}
 
@@ -189,32 +226,60 @@ var app = {
 			if ( bad_input ) {
 				$("html, body").animate({ scrollTop: 0 });
 				//alert('Please check your inputs, and try again.');
-				$('#new-partner-bad-inputs').show();
+				$('#new_edit-partner-bad-inputs').show();
 			}
 			else {
 
 				// hack ...
 				data['address_1'] = '';				
 
-				app.actions.create(
-					'partners',
-					data,
-					function() {
-						//$('#modal-new-partner').trigger('reveal:close');
-						app.models['partners'].refresh(function() {
-							app.display_page('partners');
-						});
-					},
-					function(resp) { 
-						console.log('create_new_ride: error');
-						console.log(resp);
-						if ( resp.status == 400 ) {
-							// missing information
-						}
+				if ( app.models.partners.edit_mode == false ) {
 
-						//window.location = '/login';
-					}
-				);
+					app.actions.create(
+						'partners',
+						data,
+						function() {
+							//$('#modal-new_edit-partner').trigger('reveal:close');
+							app.models['partners'].refresh(function() {
+								app.display_page('partners');
+							});
+						},
+						function(resp) { 
+							console.log('create new partner: error');
+							console.log(resp);
+							if ( resp.status == 400 ) {
+								// missing information
+							}
+
+							//window.location = '/login';
+						}
+					);
+
+				} else {
+
+					app.actions.update(
+						'partners',
+						app.models.partners.single.id,
+						data,
+						function() {
+							//$('#modal-new_edit-partner').trigger('reveal:close');
+							app.models['partners'].refresh(function() {
+								app.display_page('partners');
+							});
+						},
+						function(resp) { 
+							console.log('update partner error:');
+							console.log(resp);
+							if ( resp.status == 400 ) {
+								// missing information
+							}
+
+							//window.location = '/login';
+						}
+					);
+
+				}
+				
 
 			}
 		});
@@ -247,22 +312,45 @@ var app = {
 
 	display_page: function(page) {
 		console.log('showing page: "' + page + '"');
+
+		app.models.rides.edit_mode = false;
+		app.models.partners.edit_mode = false;
+
+		$('#new_edit-ride-title').val('');
+		$('#new_edit-ride-description').val('');
+		$('#new_edit-ride-ride_datetime').val('');
+		$('#new_edit-ride-address_0').val('');
+		$('#new_edit-ride-city').val('');
+		$('#new_edit-ride-state').val('');
+		$('#new_edit-ride-zipcode').val('');
+		$('#new_edit-ride-sponsor_id').val('');
+
+		$('#new_edit-partner-name').val('');
+		$('#new_edit-partner-description').val('');
+		$('#new_edit-partner-notification_text').val('');
+		$('#new_edit-partner-address_0').val('');
+		$('#new_edit-partner-city').val('');
+		$('#new_edit-partner-state').val('');
+		$('#new_edit-partner-zipcode').val('');
+					
 		$('.page').hide()
 		switch(page) {
 			case 'rides':
 				$('#page-rides').show();
 				app.models['rides'].refresh();
 				break;
-			case 'new-ride':
-				$('#page-new-ride').show();
+			case 'new_edit-ride':
+				$('#create-new_edit-partner').html('Create Ride!');
+				$('#page-new_edit-ride').show();
 				app.populate_sponsors_list();
 				break;
 			case 'partners':
 				$('#page-partners').show();
 				app.models['partners'].refresh();
 				break;
-			case 'new-partner':
-				$('#page-new-partner').show();
+			case 'new_edit-partner':
+				$('#create-new_edit-partner').html('Create Partner!');
+				$('#page-new_edit-partner').show();
 				//app.populate_sponsors_list();
 				//app.models['rides'].refresh();
 				break;
@@ -291,7 +379,13 @@ var app = {
 	mainTileLayer: null,
 	geo_fence: {},
 
-	init_geofence_map: function() {
+	update_geofence: function() {
+
+		
+
+	},
+
+	init_geofence_map: function(callback) {
 
 		console.log('app.init_geofence_map()');
 
@@ -321,7 +415,7 @@ var app = {
 	            app.map.enableDrawing = true;
 	            $('.leaflet-container').css('cursor','crosshair','!important');
 	            if ( app.map.geoBox != false ) {
-	                map.removeLayer(app.map.geoBox);
+	                app.map.removeLayer(app.map.geoBox);
 	            }
 	        });
 
@@ -349,25 +443,28 @@ var app = {
 	            L.DomUtil.enableTextSelection();
 	            $('.leaflet-container').css('cursor','pointer','!important'); 
 	            if (app.map.enableDrawing && app.map.drawingBox) {
+	                
 	                app.map.removeLayer(app.map.geoBox);
-	                var bounds = [app.map.topLeftCord, e.latlng];
-	                app.map.geoBox = L.rectangle(bounds, {color:'#00FF78', weight:2});
-	                app.map.addLayer(app.map.geoBox);
+			        var bounds = [app.map.topLeftCord, e.latlng];
+			        app.map.geoBox = L.rectangle(bounds, {color:'#00FF78', weight:2});
+			        app.map.addLayer(app.map.geoBox);
 
-	                var top_left_lat = Math.round(app.map.topLeftCord.lat * 10000) / 10000;
-	                var top_left_lng = Math.round(app.map.topLeftCord.lng * 10000) / 10000;
+					var top_left_lat = Math.round(app.map.topLeftCord.lat * 10000) / 10000;
+			        var top_left_lng = Math.round(app.map.topLeftCord.lng * 10000) / 10000;
 
-	                var bottom_right_lat = Math.round(e.latlng.lat * 10000) / 10000;
-	                var bottom_right_lng = Math.round(e.latlng.lng * 10000) / 10000;
+			        var bottom_right_lat = Math.round(e.latlng.lat * 10000) / 10000;
+			        var bottom_right_lng = Math.round(e.latlng.lng * 10000) / 10000;
 
-	                $('#partner-geofence-latlng').html('[' + top_left_lat + ', ' + top_left_lng + ', ' + bottom_right_lat + ', ' + bottom_right_lng);
-
-	               	app.geofence = {
+			       	app.geofence = {
 						top_left_lat: top_left_lat,
-	                	top_left_lng: top_left_lng,
-	                	bottom_right_lat: bottom_right_lat,
-	                	bottom_right_lng: bottom_right_lng,
-	               	}
+			        	top_left_lng: top_left_lng,
+			        	bottom_right_lat: bottom_right_lat,
+			        	bottom_right_lng: bottom_right_lng,
+			       	}
+
+			       	console.log('geofence: ', app.geofence);
+
+	                $('#partner-geofence-latlng').html('[ ' + app.geofence.top_left_lat + ', ' + app.geofence.top_left_lng + ', ' + app.geofence.bottom_right_lat + ', ' + app.geofence.bottom_right_lng + ' ]');
 
 	                app.map.drawingBox = false;
 	                app.map.enableDrawing = false;
@@ -377,18 +474,30 @@ var app = {
 	            }
 	        });
 
+	        console.log('init_geofence_map(), map setup complete.');
+
+    	}
+
+    	console.log('init_geofence_map(), callback: ', callback);
+    	if ( callback != undefined ) {
+    		console.log('init_geofence_map(), calling callback ...');
+    		callback();
     	}
 
 	},
 
-	populate_sponsors_list: function() {
+	populate_sponsors_list: function(callback) {
 		var partners = app.models['partners'].collection;
 		var html = '';
 		for(var i=0;i<partners.length;i++) {
 			var partner = partners[i];
 			html += '<option value="'+ partner.id + '"">' + partner.name + '</option>';
 		}
-		$('#new-ride-sponsor_id').html(html);
+		$('#new_edit-ride-sponsor_id').html(html);
+
+		if ( callback != undefined ) {
+			callback();
+		}
 	},
 
 	actions: {
@@ -424,6 +533,7 @@ var app = {
 		},
 
 		update: function(model, id, thing, success, failure) {
+			console.log('[PUT]', model, id, thing);
 			$.ajax({
 				url: '/api/' + model + '/' + id,
 				type: 'PUT',
@@ -575,7 +685,7 @@ var app = {
 								var user = users[i];
 								html += '<tr>';
 								html += '<td>' + user.first + ' ' + user.last + '</td>';
-								html += '<td>' + user.last_login + '</td>';
+								html += '<td>' + user.last_login.split('.')[0] + '</td>';
 								html += '<td>' + user.platform + '</td>';
 								//html += '<td>' + sponsor.name + '</td>';
 								html += '<td>';
@@ -627,6 +737,68 @@ var app = {
 			collection: [],
 			single: {},
 
+			edit_mode: false,
+
+			partner_from_id: function(id) {
+				for ( var index in app.models.partners.collection ) {
+					var partner = app.models.partners.collection[index];
+					console.log(partner);
+					if (partner.id == id) {
+						return partner;
+					}
+				}
+				return null;
+			},
+
+			populate_edit_page: function() {
+
+				//app.models.partners.edit_mode = true;
+				$('#create-new_edit-partner').html('Update Partner');
+
+				var partner = app.models.partners.single;
+
+				$('#new_edit-partner-name').val(partner.name);
+				$('#new_edit-partner-description').val(partner.description);
+				$('#new_edit-partner-notification_text').val(partner.notification_text);
+				$('#new_edit-partner-address_0').val(partner.address_0);
+				$('#new_edit-partner-city').val(partner.city);
+				$('#new_edit-partner-state').val(partner.state);
+				$('#new_edit-partner-zipcode').val(partner.zipcode);
+
+			},
+
+			populate_geofence: function() {
+
+				console.log('populate_geofence(), drawing fence ...');
+
+				var partner = app.models.partners.single;
+
+				app.geofence = {
+					top_left_lat: partner.fence_top_left_lat,
+					top_left_lng: partner.fence_top_left_lng,
+					bottom_right_lat: partner.fence_bottom_right_lat,
+					bottom_right_lng: partner.fence_bottom_right_lng,
+				};
+				app.map.removeLayer(app.map.geoBox);
+		        //var bounds = [app.map.topLeftCord, e.latlng];
+		        var bounds = [
+		        	{
+		        		lat: app.geofence.top_left_lat,
+		        		lng: app.geofence.top_left_lng,
+		        	},
+		        	{
+		        		lat: app.geofence.bottom_right_lat,
+		        		lng: app.geofence.bottom_right_lng,
+		        	}
+		        ];
+		        app.map.enableDrawing = true;
+		        app.map.geoBox = L.rectangle(bounds, {color:'#00FF78', weight:2});
+		        app.map.addLayer(app.map.geoBox);
+		        app.map.enableDrawing = false;
+
+		        console.log('populate_geofence(), done drawing map.');
+			},
+
 			refresh: function(callback) { 
 
 				console.log('partners.refresh()');
@@ -638,7 +810,6 @@ var app = {
 					app.models['partners'].start,
 					app.models['partners'].count,
 					function(resp) {
-						console.log(resp);
 						app.models['partners'].collection = resp;
 						var partners = resp;
 						var html = '';
@@ -663,8 +834,8 @@ var app = {
 								html += '<td>' + partner.address_0 + ', ' + partner.city + ' ' + partner.zipcode + '</td>';
 								//html += '<td>' + sponsor.name + '</td>';
 								html += '<td>';
-								html += '    <a id="edit-partner-' + partner.id + '" class="edit-link"><i class="fa fa-pencil"></i></a>';
-								html += '    <a id="cancel-partner-' + partner.id + '"><i class="fa fa-trash"></i></a>';
+								html += '    <a id="' + partner.id + '" class="edit-parter-link edit-link"><i class="fa fa-pencil"></i></a>';
+								html += '    <a id="' + partner.id + '"><i class="fa fa-trash"></i></a>';
 								html += '</td>';
 								html += '</tr>';
 							}
@@ -672,6 +843,24 @@ var app = {
 							html += '</table>'
 						}
 						$('#partners-list').html(html);
+
+						$('.edit-parter-link').off('click');
+						$('.edit-parter-link').on('click', function() {
+							console.log('.edit-parter-link, click().')							
+							var id = this.id;
+							app.models.partners.single = app.models.partners.partner_from_id(id);
+							
+							app.display_page('new_edit-partner');
+
+							app.models.partners.populate_edit_page();
+
+							app.init_geofence_map( function() {
+								app.models.partners.populate_geofence();
+							});
+
+							app.models.partners.edit_mode = true;
+
+						});
 
 						if ( callback != undefined )
 							callback();
@@ -700,6 +889,52 @@ var app = {
 			collection: [],
 			single: {},
 
+			edit_mode: false,
+
+			ride_from_id: function(id) {
+				console.log('ride_from_id(), id: ' + id + ', rides:', app.models.rides.collection);
+				for ( var index in app.models.rides.collection ) {
+					var _ride = app.models.rides.collection[index];
+					//console.log(ride);
+					if (_ride.ride.id == id) {
+						return _ride;
+					}
+				}
+				return null;
+			},
+
+			populate_edit_page: function() {
+
+				console.log('app.models.rides.populate_edit_page()');
+
+				//app.models.partners.edit_mode = true;
+				$('#create-new_edit-ride').html('Update Ride');
+
+				var ride = app.models.rides.single.ride;
+				var sponsor = app.models.rides.single.sponsor;
+				var checkin_count = app.models.rides.single.checkin_count;
+
+				var date = ride.ride_datetime.split(' ')[0]; // YYYY-MM-DD
+				var ride_date = date.split('-')[1] + '/' + date.split('-')[2] + '/' + date.split('-')[0]; // MM-DD-YYYY
+				var ride_time = ride.ride_datetime.split(' ')[1]
+
+				console.log('ride: ', ride);
+
+				$('#new_edit-ride-title').val(ride.title);
+				$('#new_edit-ride-description').val(ride.description);
+				$('#new_edit-ride-ride_datetime').val(ride_date);
+				$('#new_edit-ride-address_0').val(ride.address_0);
+				$('#new_edit-ride-city').val(ride.city);
+				$('#new_edit-ride-state').val(ride.state);
+				$('#new_edit-ride-zipcode').val(ride.zipcode);
+
+				app.populate_sponsors_list(function() {
+					console.log('app.models.rides.populate_edit_page(), populating sponsor list selection with id: ' + sponsor.id);
+					$('#new_edit-ride-sponsor_id').val(sponsor.id);
+				});
+
+			},
+
 			refresh: function(callback) {
 
 				$('#rides-list').html('<img src="static/gears.svg"></img>');
@@ -723,18 +958,25 @@ var app = {
 						else {
 							html += '<table>';
 							html += '<thead>';
-							html += '<tr><td>Date</td><td>Location</td><td>Sponsor</td><td>Actions</td></tr>';
+							html += '<tr><td>Date</td><td>Location</td><td>Sponsor</td><td>Check Ins</td><td>Actions</td></tr>';
 							html += '</thead>';
 							html += '<tbody>';
 							for(var i=0; i<rides.length; i++) {
 								var ride = rides[i].ride;
 								var sponsor = rides[i].sponsor;
-								html += '<tr>';
+								var checkin_count = rides[i].checkin_count;
+								var now = new Date();
+								if ( ride.ride_datetime.split(' ')[0] == now.yyyymmdd() ) {
+									html += '<tr class="ride-today-row">'
+								} else {
+									html += '<tr>';
+								}
 								html += '<td>' + ride.ride_datetime + '</td>';
 								html += '<td>' + ride.address_0 + ', ' + ride.city + ' ' + ride.zipcode + '</td>';
 								html += '<td>' + sponsor.name + '</td>';
+								html += '<td>' + checkin_count + ' <a id="' + ride.id + '" class="ride-checkin-report-button"><i class="fa fa-question"></i></a></td>';
 								html += '<td>';
-								html += '    <a id="edit-ride-' + ride.id + '" class="edit-link"><i class="fa fa-pencil"></i></a>';
+								html += '    <a id="' + ride.id + '" class="edit-link edit-ride-link"><i class="fa fa-pencil"></i></a>';
 								html += '    <a id="cancel-ride-' + ride.id + '"><i class="fa fa-trash"></i></a>';
 								html += '</td>';
 								html += '</tr>';
@@ -743,6 +985,37 @@ var app = {
 							html += '</table>'
 						}
 						$('#rides-list').html(html);
+
+						$('.ride-checkin-report-button').off('click');
+						$('.ride-checkin-report-button').on('click', function() {
+							var ride = app.models.rides.ride_from_id(this.id);
+							
+							console.log('ride:', ride);
+
+							app.models.checkins.refresh(ride);
+							
+							$('#modal-ride-checkins').reveal({
+				    			animation: 'fadeAndPop',
+				    			animationspeed: 250,
+				    			closeonbackgroundclick: true,
+				    			dismissmodalclass: 'modal-ride-checkins-cancel'
+				    		});
+
+						});
+
+						$('.edit-ride-link').off('click');
+						$('.edit-ride-link').on('click', function() {
+							console.log('.edit-ride-link, click().')							
+							var id = this.id;
+							app.models.rides.single = app.models.rides.ride_from_id(id);
+
+							app.display_page('new_edit-ride');
+
+							app.models.rides.populate_edit_page();
+
+							app.models.rides.edit_mode = true;
+
+						});
 
 						if ( callback != undefined )
 							callback();
@@ -766,8 +1039,52 @@ var app = {
 			collection: [],
 			single: {},
 
-			refresh: function() {
-			
+			refresh: function(_ride) {
+				var ride = _ride.ride;
+				var sponsor = _ride.sponsor;
+				var checkin_count = _ride.checkin_count;
+				$.ajax({
+					url: '/api/checkins?ride_id=' + ride.id,
+					type: 'GET',
+					success: function(resp) {
+
+						console.log('/api/checkins response: ', resp);
+
+						app.models.checkins.collection = resp;
+						var checkins = resp;
+
+						var html = '';
+
+						html += '<a target="_blank" href="/checkins?ride_id=' + ride.id + '">Pritable Version</a></br>';
+
+						html += '<i>There are <b>' + checkins.length + '</b> people checked into this ride.</i>';
+
+						if ( checkins.length == 0 ) {
+
+							// nothing to do
+
+						} else {
+
+							html += '<table>';
+							html += '<thead>';
+							html += '<tr><th></td></tr>';
+							html += '</thead>'
+							for(var i=0; i<checkins.length; i++) {
+								var checkin = checkins[i];
+
+							}
+							html += '</table>';
+
+						}
+
+						$('#ride-checkins-list').html(html);
+					},
+					error: function(resp) {
+						//window.location = '/login';
+					}
+				});
+
+				
 			},
 
 		},

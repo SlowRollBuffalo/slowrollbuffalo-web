@@ -142,31 +142,31 @@ button {
 	margin-left: -400px !important;
 }*/
 
-#modal-new-ride {
+#modal-new_edit-ride {
 	text-align: left;
 }
 
-#modal-new-ride input {
+#modal-new_edit-ride input {
   	/*padding: 0.2em 1em;*/
 	width: 100%;
 	height: 2em;
 }
 
-#modal-new-ride textarea {
+#modal-new_edit-ride textarea {
 	padding: 0.2em 1em !important;
 }
 
-#modal-new-partner {
+#modal-new_edit-partner {
 	text-align: left;
 }
 
-#modal-new-partner input {
+#modal-new_edit-partner input {
   	/*padding: 0.2em 1em;*/
 	width: 100%;
 	height: 2em;
 }
 
-#modal-new-partner textarea {
+#modal-new_edit-partner textarea {
 	padding: 0.2em 1em !important;
 }
 
@@ -225,7 +225,7 @@ button {
 	text-align: center;
 }
 
-#new-ride-bad-inputs {
+#new_edit-ride-bad-inputs {
 	display: none;
 	box-shadow: 0 0 0 2px #e89980;
     border: 2px solid #e89980;
@@ -236,7 +236,7 @@ button {
     width: 100%;
 }
 
-#new-partner-bad-inputs {
+#new_edit-partner-bad-inputs {
 	display: none;
 	box-shadow: 0 0 0 2px #e89980;
     border: 2px solid #e89980;
@@ -247,7 +247,7 @@ button {
     width: 100%;
 }
 
-#new-partner-bad-geofence {
+#new_edit-partner-bad-geofence {
 	display: none;
 	box-shadow: 0 0 0 2px #e89980;
     border: 2px solid #e89980;
@@ -314,4 +314,8 @@ button {
 
 #legal-notice-update-button {
 	margin-top: 2rem;
+}
+
+.ride-today-row {
+	background: rgba(0,255,0,.2);
 }

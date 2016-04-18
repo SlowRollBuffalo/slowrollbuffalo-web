@@ -21,6 +21,7 @@ from .models import (
 from .utils import *
 
 import datetime
+import json
 
 @view_defaults(route_name='/')
 class Index(object):
@@ -33,10 +34,11 @@ class Index(object):
         rides = []
         _rides = Rides.get_paged(0, 10)
         if _rides:
-            for ride, sponsor in _rides:
+            for ride, sponsor, checkin_count in _rides:
                 rides.append({
                     'ride': ride.to_dict(),
                     'sponsor': sponsor.to_dict(),
+                    'checkin_count': checkin_count,
                 })
         return {'rides': rides}
 
@@ -64,6 +66,33 @@ class Login(object):
     @view_config(request_method='GET', renderer='templates/login.mak')
     def get(self):
         return {}
+
+
+@view_defaults(route_name='/checkins')
+class CheckinsPrintablePage(object):
+
+    def __init__(self, request):
+        #self.request = build_request(request)
+        self.request = request
+        self.user = authenticate(request)
+        
+    @view_config(request_method='GET', renderer='templates/checkins.mak')
+    def get(self):
+        print('Chcekins.get()')
+        if self.user and self.user.is_admin:
+            print('Chcekins.get(), authed.')
+            if 'ride_id' in self.request.GET:
+                print('Chcekins.get(), valid data')
+                ride_id = self.request.GET['ride_id']
+                ride = Rides.get_by_id(ride_id)
+                checkins = Checkins.get_by_ride_id(ride_id)
+                print(ride)
+                return {
+                    'ride': ride,
+                    'checkins': checkins,
+                    'now': str(datetime.datetime.now()).split('.')[0]
+                }
+        return HTTPFound(location='/login')
 
 
 @view_defaults(route_name='/api/users/login', renderer='json')
@@ -426,8 +455,8 @@ class PartnerAPI(object):
 
     req = ('name', 'description', 'address_0', 'address_1', 'city',
            'state', 'zipcode', 'notification_text',
-           'fence_top_left_lat,' 'fence_top_left_lng',
-           'fence_bottom_right_lat', 'fence_bottom_right_lng')
+           'fence_top_left_lat', 'fence_top_left_lng',
+           'fence_bottom_right_lat', 'fence_bottom_right_lng', )
 
     def __init__(self, request):
         self.request = request
@@ -438,10 +467,14 @@ class PartnerAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
+        print('\n\n/api/partners/{id} [GET]')
         resp = {}
         if self.user and self.user.is_admin:
             _id = self.request.matchdict['id'].replace('-','')
+            print('id: ' + _id)
             partner = Partners.get_by_id(_id)
+            print('partner:')
+            print(partner)
             if partner:
                 resp = partners.to_dict()
             else:
@@ -455,9 +488,11 @@ class PartnerAPI(object):
     def post(self):
         resp = {}
         if self.user and self.user.is_admin:
+            print(json.dumps(self.req, indent=4))
+            print(json.dumps(self.payload, indent=4))
             if self.payload and all(r in self.payload for r in self.req):
-                _id = self.request.matchdict['id'].replace('-',''),
-                partner = Partners.update(_id, **self.payload)
+                _id = self.request.matchdict['id'].replace('-','')
+                partner = Partners.update_by_id(_id, **self.payload)
                 if partner:
                     resp = partner.to_dict()
                 else:
@@ -490,10 +525,11 @@ class RidesAPI(object):
             _rides = Rides.get_paged(self.start, self.count)
             if _rides:
                 resp = []
-                for ride, sponsor in _rides:
+                for ride, sponsor, count in _rides:
                     resp.append({
                         'ride': ride.to_dict(),
                         'sponsor': sponsor.to_dict(),
+                        'checkin_count': count,
                     })
             #else:
             #    self.request.response.status = 404
@@ -554,7 +590,7 @@ class RideAPI(object):
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
                 _id = self.request.matchdict['id'].replace('-','')
-                ride = Rides.update(_id, **self.payload)
+                ride = Rides.update_by_id(_id, **self.payload)
                 if ride:
                     resp = ride.to_dict()
                 else:
@@ -583,11 +619,23 @@ class CheckinsAPI(object):
     def get(self):
         resp = []
         if self.user and self.user.is_admin:
-            checkins = Checkins.get_all()
-            if checkins:
-                resp = [c.to_dict() for c in checkins]
+            if 'ride_id' in self.request.GET:
+                ride_id = self.request.GET['ride_id']
+                _checkins = Checkins.get_by_ride_id(ride_id)
+                if _checkins:
+                    for checkin, user in _checkins:
+                        resp.append(dict(
+                            checkin=checkin.to_dict(),
+                            user=userc.to_dict(),
+                        ))
+                #else:
+                #    self.request.response.status = 404
             else:
-                self.request.response.status = 404
+                checkins = Checkins.get_all()
+                if checkins:
+                    resp = [c.to_dict() for c in checkins]
+                #else:
+                #    self.request.response.status = 404
         else:
             self.request.response.status = 403
         return resp
@@ -651,7 +699,7 @@ class CheckinAPI(object):
         resp = {'checkin': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
-                _id = self.request.matchdict['id'].replace('-',''),
+                _id = self.request.matchdict['id'].replace('-','')
                 checkin = Checkins.update(_id, **self.payload)
                 if checkin:
                     resp = {'checkin': checkin.to_dict()}

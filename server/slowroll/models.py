@@ -107,6 +107,8 @@ class CreationMixin():
                 bad_keys.append(key)
         for key in bad_keys:
             del kwargs[key]
+        if 'id' in kwargs:
+            del kwargs['id'] # del id if it's there
         ####################################################
 
         keys = set(cls.__dict__)
@@ -349,8 +351,17 @@ class Rides(Base, TimeStampMixin, CreationMixin):
         rides = DBSession.query(
             Rides,
             Partners,
+            DBSession.query(
+                func.count(distinct(Checkins.id)).label('checkin_count'),
+            ).filter(
+                Checkins.ride_id == Rides.id,
+            ).label('checkin_count'),
         ).outerjoin(
             Partners, Partners.id == Rides.sponsor_id,
+        ).order_by(
+            desc(
+                Rides.ride_datetime,
+            ),
         ).slice(start, start+count).all()
         return rides
 
@@ -378,14 +389,15 @@ class Checkins(Base, TimeStampMixin, CreationMixin):
 
     @classmethod
     def get_by_ride_id(cls, ride_id, start=0, count=50):
-        users = DBSession.query(
+        _checkins = DBSession.query(
+            Checkins,
             Users,
         ).outerjoin(
-            Checkins, Checkins.user_id == Users.id,
+            Users, Users.id == Checkins.user_id,
         ).filter(
             Checkins.ride_id == ride_id,
         ).slice(start, start+count).all()
-        return users
+        return _checkins
 
     def to_dict(self):
         resp = super(Checkins, self).to_dict()

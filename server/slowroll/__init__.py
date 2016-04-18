@@ -56,6 +56,8 @@ def main(global_config, **settings):
     config.add_route('/validate', '/validate')
     config.add_route('/admin', '/admin')
 
+    config.add_route('/checkins', '/checkins')
+
     config.add_route('/api/users/login', '/api/users/login')
     config.add_route('/api/users/logout', '/api/users/logout')
     config.add_route('/api/users/register', '/api/users/register')
@@ -68,7 +70,7 @@ def main(global_config, **settings):
     config.add_route('/api/partner_levels/{id}', '/api/partner_levels/{id}')
 
     config.add_route('/api/partners', '/api/partners')
-    config.add_route('/api/partners/{id}', '/api/partners')
+    config.add_route('/api/partners/{id}', '/api/partners/{id}')
 
     config.add_route('/api/rides', '/api/rides')
     config.add_route('/api/rides/{id}', '/api/rides/{id}')
