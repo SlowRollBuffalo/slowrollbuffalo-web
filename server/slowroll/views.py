@@ -71,17 +71,29 @@ class Login(object):
 @view_defaults(route_name='/checkin')
 class Checkin(object):
     
+    post_req = (
+        'first',
+        'last',
+        'ride_id',
+    )
+
     def __init__(self, request):
         self.request = request
+        self.payload = get_payload(self.request)
     
     @view_config(request_method='GET', renderer='templates/checkin.mak')
     def get(self):
-        return {}
+        resp = {}
+        if 'ride_id' in self.request.GET:
+            resp = {}
+        else:
+            return HTTPFound(location='/')
+        return resp
 
     @view_config(request_method='POST', renderer='json')
     def post(self):
         resp = {}
-        if 'ride_id' in self.request.GET:
+        if self.payload and all(r in self.payload for r in self.post_req):
             ride_id = self.request.GET['ride_id']
             user = Users.create_new_user(
                 first=payload['first'],
@@ -91,13 +103,16 @@ class Checkin(object):
                 is_admin=False,
                 temporary=True,
             )
-            Checkin.add(
+            checkin = Checkin.add(
                 ride_id=ride_id,
                 user_id=user.id,
                 platform='webform',
             )
+            resp = {
+                'checkin': checkin.to_dict(),
+            }
         else:
-            return HTTPFound(location='/')
+            self.request.response.status = 400
 
         return resp
 

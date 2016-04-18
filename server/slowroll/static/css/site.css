@@ -335,3 +335,7 @@ button {
 	height: 600px;
 	overflow-y: scroll;
 }
+
+.table-wrapper {
+	font-size: 130% !important;
+}

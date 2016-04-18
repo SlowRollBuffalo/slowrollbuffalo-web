@@ -1101,7 +1101,7 @@ var app = {
 
 						html += '<a target="_blank" href="/checkins?ride_id=' + ride.id + '">Pritable Version</a></br>';
 
-						html += '<i>There are <b>' + checkins.length + '</b> people checked into this ride.</i>';
+						html += '<br/><i>There are <b>' + checkins.length + '</b> people checked into this ride.</i><br/><br/>';
 
 						if ( checkins.length == 0 ) {
 

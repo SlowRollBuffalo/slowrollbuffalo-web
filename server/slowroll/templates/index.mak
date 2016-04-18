@@ -87,6 +87,7 @@
 											<td>Date</td>
 											<td>Sponsor</td>
 											<td>Location</td>
+											
 										</tr>
 									</thead>
 									<tbody>
