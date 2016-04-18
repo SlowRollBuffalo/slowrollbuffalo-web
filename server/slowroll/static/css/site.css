@@ -15,6 +15,9 @@ label {
 	margin-bottom: 0em !important;
 }
 
+.page h2 {
+	text-align: left
+}
 
 #banner h2 {
 	color: rgba(250, 250, 250, 1);
@@ -332,10 +335,10 @@ button {
 }
 
 #ride-checkins-list-table {
-	height: 600px;
+	height: 400px;
 	overflow-y: scroll;
 }
 
-.table-wrapper {
+/*.table-wrapper {
 	font-size: 130% !important;
-}
+}*/

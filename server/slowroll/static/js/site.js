@@ -301,6 +301,22 @@ var app = {
 			);
 		});
 
+		$('#delete-partner').on('click', function() {
+			var partner = self.app.models.partners.signal;
+			app.actions.remove(
+				'partners',
+				partner.id,
+				function(resp) {
+					alert('The partner has been deleted Successfully.');
+					$('#modal-partner-delete').trigger('reveal:close');
+					app.display_page('partners');
+				},
+				function() {
+					// herm ...
+				}
+			);
+		});
+
 		console.log('app.init() complete.');
 	},
 
@@ -327,8 +343,25 @@ var app = {
         });
     },
 
+    check_login: function() {
+    	$.ajax({
+    		url: '/api/users/login',
+    		type: 'GET',
+    		success: function(resp) {
+    			if ( resp.loggedin == false ) {
+    				window.location = '/login';
+    			}
+    		},
+    		error: function(resp) {
+    			window.location = '/login';
+    		}
+    	});
+    },
+
 	display_page: function(page) {
 		console.log('showing page: "' + page + '"');
+
+		app.check_login();
 
 		app.models.rides.edit_mode = false;
 		app.models.partners.edit_mode = false;
@@ -389,7 +422,9 @@ var app = {
 				//window.location = '/login';
 				break;
 		};
-		
+	
+		$('#gears-place-holder').hide();
+
 	},
 
 	map: null,
@@ -636,7 +671,7 @@ var app = {
 					html += '<input id="user-is-admin-checkbox" type="checkbox" value=""></input>';
 				}
 				html += '<label for="user-is-admin-checkbox">User is Administrator</label>';
-				html += '<i>note: only users with admin privileges can login to the admin interface</i>';
+				html += '<br/><i>note: only users with admin privileges can login to the admin interface</i>';
 
 				$('#user-settings-content').html(html);
 
@@ -852,7 +887,7 @@ var app = {
 								//html += '<td>' + sponsor.name + '</td>';
 								html += '<td>';
 								html += '    <a id="' + partner.id + '" class="edit-parter-link edit-link"><i class="fa fa-pencil"></i></a>';
-								html += '    <a id="' + partner.id + '"><i class="fa fa-trash"></i></a>';
+								html += '    <a id="' + partner.id + '" class="delete-partner-link"><i class="fa fa-trash"></i></a>';
 								html += '</td>';
 								html += '</tr>';
 							}
@@ -866,7 +901,7 @@ var app = {
 							console.log('.edit-parter-link, click().')							
 							var id = this.id;
 							app.models.partners.single = app.models.partners.partner_from_id(id);
-							
+
 							app.display_page('new_edit-partner');
 
 							app.models.partners.populate_edit_page();
@@ -878,6 +913,32 @@ var app = {
 							app.models.partners.edit_mode = true;
 
 						});
+
+						$('.delete-partner-link').off('click');
+						$('.delete-partner-link').on('click', function() {
+							console.log('.delete-parnter-link, click().')							
+							var id = this.id;
+
+							app.models.partners.single = app.models.partners.partner_from_id(id);
+							
+							var partner = app.models.partners.partner_from_id(id);
+
+							var html = '';
+
+							html += '<h4>Are you sure you want to delete this partner?</span></h4>';
+					     	html += '<span>Name: <b>' + partner.name + '</b></span><br/>';
+					     	html += '<span>Street: <b>' + partner.address_0 + '</b></span><br/>';
+
+					     	$('#modal-partner-delete-details').html(html);
+
+					     	$('#modal-partner-delete').reveal({
+								animation: 'fadeAndPop',
+								animationspeed: 300,
+								loseonbackgroundclick: true,
+								dismissmodalclass: 'modal-partner-delete-cancel'
+							});
+
+					    });
 
 						if ( callback != undefined )
 							callback();

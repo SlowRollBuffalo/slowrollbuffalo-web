@@ -45,40 +45,49 @@
 			</section>
 			<!--</div>-->
 
+			<section id="gears-place-holder">
+				<center><img src="static/gears.svg"></img></center>	
+			</section>
+			
+
 			<section id="page-rides" class="page box special features">
+				<a class="right" onclick="app.display_page('rides');">Refresh</a>
 				<h2>Rides</h2>
+
 			    <div class="row2">
 					<div class="table-wrapper" style="width: 100%;">
-					    <div class=""><a id="open-new_edit-ride-page" class="new-link"><i class="fa fa-plus"></i></a></div>
+					    <div class=""> 
+					    	<a id="open-new_edit-ride-page" class="new-link"><i class="fa fa-plus"></i></a>
+					    </div>
 						<div id="rides-list"></div>
-						<div id="modal-ride-checkins" class="reveal-modal">
-						    <h2>Ride Check-ins</h2>
-						    <div id="ride-checkins-list">
-						    	
-						    </div>
-						    <a class="close-reveal-modal modal-ride-checkins-cancel">&#215;</a>
-						</div>
-						<div id="modal-ride-delete" class="reveal-modal">
-						    <h2>Cancel Ride?</h2>
-						    <i>Note: This action can not be undone!</i>
-						    <br/><br/>
-			     			
-			     			<hr/>
-			     			<div id="modal-ride-delete-details">
-			     				<center><img src="static/gears.svg"></img></center>
-			     			</div>
-			     			<hr/>
-			     			
-			     			<br/>
-			     			<input id="modal-ride-delete-notify-users" type="checkbox" value=""></input>
-							<label for="modal-ride-delete-notify-users">Notify Users of Cancellation</label>
-							
-							<br/><br/><br/>
+					</div>
+					<div id="modal-ride-checkins" class="reveal-modal">
+					    <h2>Ride Check-ins</h2>
+					    <div id="ride-checkins-list">
+					    	
+					    </div>
+					    <a class="close-reveal-modal modal-ride-checkins-cancel">&#215;</a>
+					</div>
+					<div id="modal-ride-delete" class="reveal-modal">
+					    <h2>Cancel Ride?</h2>
+					    <i>Note: This action can not be undone!</i>
+					    <br/><br/>
+		     			
+		     			<hr/>
+		     			<div id="modal-ride-delete-details">
+		     				<center><img src="static/gears.svg"></img></center>
+		     			</div>
+		     			<hr/>
+		     			
+		     			<br/>
+		     			<input id="modal-ride-delete-notify-users" type="checkbox" value=""></input>
+						<label for="modal-ride-delete-notify-users">Notify Users of Cancellation</label>
+						
+						<br/><br/><br/>
 
-							<button id="cancel-ride" class="center cancel-button">Cancel Ride</button>
+						<button id="cancel-ride" class="center cancel-button">Cancel Ride</button>
 
-						    <a class="close-reveal-modal modal-ride-delete-cancel">&#215;</a>
-						</div>
+					    <a class="close-reveal-modal modal-ride-delete-cancel">&#215;</a>
 					</div>
 			    </div>
 			</section>
@@ -115,11 +124,28 @@
 			</section>
 
 			<section id="page-partners" class="page box special features">
+				<a class="right" onclick="app.display_page('partners');">Refresh</a>
 				<h2>Partners</h2>
 			    <div class="row2">
 					<div class="table-wrapper" style="width: 100%;">
 					    <div class=""><a id="open-new_edit-partner-page" class="new-link"><i class="fa fa-plus"></i></a></div>
 						<div id="partners-list"></div>
+					</div>
+					<div id="modal-partner-delete" class="reveal-modal">
+					    <h2>Delete Partner?</h2>
+					    <i>Note: This action can not be undone!</i>
+					    <br/><br/>
+		     			
+		     			<hr/>
+		     			<div id="modal-partner-delete-details">
+		     				<center><img src="static/gears.svg"></img></center>
+		     			</div>
+		     			<hr/>
+		     			
+		     			<br/>
+						<button id="delete-partner" class="center cancel-button">Delete Partner</button>
+
+					    <a class="close-reveal-modal modal-ride-delete-cancel">&#215;</a>
 					</div>
 			    </div>
 			</section>
@@ -159,6 +185,7 @@
 			</section>
 
 			<section id="page-users" class="page box special features">
+				<a class="right" onclick="app.display_page('users');">Refresh</a>
 				<h2>Users</h2>
 			    <div class="row2">
 					<div class="table-wrapper" style="width: 100%;">
@@ -176,6 +203,7 @@
 			</section>
 
 			<section id="page-settings" class="page box special features">
+				<a class="right" onclick="app.display_page('settings');">Refresh</a>
 				<h2>Settings</h2>
 			    <div class="row2">
 			    	<div class="legal-notice-editor-wrapper">
