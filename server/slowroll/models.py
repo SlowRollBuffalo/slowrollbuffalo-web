@@ -44,7 +44,7 @@ class TimeStampMixin(object):
 class CreationMixin():
 
     id = Column(UUIDType(binary=False), primary_key=True, unique=True)
-    deleted = Column(Boolean, nullable=True)
+    #deleted = Column(Boolean, nullable=False, server_default='0')
 
     @classmethod
     def add(cls, **kwargs):
@@ -62,7 +62,7 @@ class CreationMixin():
         thing = cls(**kwargs)
         if thing.id is None:
             thing.id = str(uuid4())
-        thing.deleted = False
+        #thing.deleted = False
         DBSession.add(thing)
         DBSession.commit()
         return thing
@@ -72,7 +72,7 @@ class CreationMixin():
         things = DBSession.query(
             cls,
         ).filter(
-            cls.deleted == False,
+            #cls.deleted == False,
         ).all()
         return things
 
@@ -81,7 +81,7 @@ class CreationMixin():
         things = DBSession.query(
             cls,
         ).filter(
-            cls.deleted == False,
+            #cls.deleted == False,
         ).slice(start, start+count).all()
         return things
 
@@ -99,7 +99,7 @@ class CreationMixin():
         thing = cls.get_by_id(id)
         if thing is not None:
             #DBSession.delete(thing)
-            thing.deleted = True
+            #thing.deleted = True
             DBSession.add(thing)
             DBSession.commit()
         return thing
@@ -370,7 +370,7 @@ class Rides(Base, TimeStampMixin, CreationMixin):
     __tablename__ = 'rides'
     title = Column(UnicodeText, nullable=False)
     description = Column(UnicodeText, nullable=False)
-    ride_datetime = Column(Date, nullable=False)
+    ride_datetime = Column(DateTime, nullable=False)
     address_0 = Column(UnicodeText, nullable=False)
     address_1 = Column(UnicodeText, nullable=False)
     city = Column(UnicodeText, nullable=False)
@@ -390,7 +390,7 @@ class Rides(Base, TimeStampMixin, CreationMixin):
                 Checkins.ride_id == Rides.id,
             ).label('checkin_count'),
         ).filter(
-            cls.deleted == False,
+            #cls.deleted == False,
         ).outerjoin(
             Partners, Partners.id == Rides.sponsor_id,
         ).order_by(

@@ -46,14 +46,23 @@ var app = {
 		})
 
 		// connect date picker
-		$('#new_edit-ride-ride_datetime').datepicker();
+		$('#new_edit-ride-ride_datetime-date').datepicker();
+
+		// connect time picker
+		$('#new_edit-ride-ride_datetime-time').wickedpicker();		
 
 		// connect create new ride button in modal
 		$('#create-new_edit-ride').on('click', function() {
 			
 			var title = $('#new_edit-ride-title').val();
 			var description = $('#new_edit-ride-description').val();
-			var ride_datetime = $('#new_edit-ride-ride_datetime').val();
+			
+			var ride_datetime_date = $('#new_edit-ride-ride_datetime-date').val();
+			var ride_datetime_time = $('#new_edit-ride-ride_datetime-time').val();
+
+			var leading_zero = ((ride_datetime_time.split(':')[0].length == 1) ? '0' : '');
+			var ride_datetime = ride_datetime_date + ' ' + leading_zero + ride_datetime_time.replace(/ : /g,':');
+
 			var address_0 = $('#new_edit-ride-address_0').val();
 			var city = $('#new_edit-ride-city').val();
 			var state = $('#new_edit-ride-state').val();
@@ -69,12 +78,13 @@ var app = {
 				'city': city,
 				'state': state,
 				'zipcode': zipcode,
-				'sponsor_id': sponsor_id 
+				'sponsor_id': sponsor_id,
+				'deleted': false
 			};
 
 			var bad_input = false;
 			for( var key in data ) {
-				if ( data[key] == '' ) {
+				if ( key != 'deleted' && data[key] == '' ) {
 					console.log('bad input: ' + key)
 					$('#new_edit-ride-' + key).addClass('bad-input');
 					bad_input = true;
@@ -391,6 +401,8 @@ var app = {
 				app.models['rides'].refresh();
 				break;
 			case 'new_edit-ride':
+				if ( !app.models.rides.edit_mode )
+					$('#new_edit-ride-ride_datetime-time').val('06:30 PM');
 				$('#create-new_edit-partner').html('Create Ride!');
 				$('#page-new_edit-ride').show();
 				app.populate_sponsors_list();
@@ -993,15 +1005,22 @@ var app = {
 				var sponsor = app.models.rides.single.sponsor;
 				var checkin_count = app.models.rides.single.checkin_count;
 
+				console.log('ride: ', ride);
+				console.log('sponsor: ', sponsor);
+				console.log('checkin_count: ', checkin_count);
+
 				var date = ride.ride_datetime.split(' ')[0]; // YYYY-MM-DD
 				var ride_date = date.split('-')[1] + '/' + date.split('-')[2] + '/' + date.split('-')[0]; // MM-DD-YYYY
-				var ride_time = ride.ride_datetime.split(' ')[1]
+				var hours = ride.ride_datetime.split(' ')[1].split('.')[0].split(':')[0];
+				var minutes = ride.ride_datetime.split(' ')[1].split('.')[0].split(':')[0];
+				var ride_time = '' + ((hours <= 12) ? hours : hours-12) + ':' + minutes + ' ' + ((hours <= 12) ? 'AM' : 'PM');
 
 				console.log('ride: ', ride);
 
 				$('#new_edit-ride-title').val(ride.title);
 				$('#new_edit-ride-description').val(ride.description);
-				$('#new_edit-ride-ride_datetime').val(ride_date);
+				$('#new_edit-ride-ride_datetime-date').val(ride_date);
+				$('#new_edit-ride-ride_datetime-time').val(ride_time);
 				$('#new_edit-ride-address_0').val(ride.address_0);
 				$('#new_edit-ride-city').val(ride.city);
 				$('#new_edit-ride-state').val(ride.state);

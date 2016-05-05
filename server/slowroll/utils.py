@@ -12,6 +12,9 @@ upload_dir = './uploads'
 def get_payload(request):
     bad_keys = []
     #try:
+    print('\t[INFO] raw payload:\n')
+    print(request.body)
+    
     if True:
         try:
             payload = request.json_body
@@ -20,12 +23,22 @@ def get_payload(request):
         if 'id' in payload:
             del payload['id']
         for key in payload:
-            if '_datetime' in key:
+            if 'token_expire_datetime' in key or 'creation_datetime' in key or 'modified_datetime' in key:
+                bad_keys.append(key)
+            elif '_datetime' in key:
                 try:
                     dt = datetime.datetime.strptime(payload[key], '%m/%d/%Y')
                     payload[key] = dt
                 except:
-                    bad_keys.append(key)
+                    print("\t[INFO] date not in right format, trying again.")
+                    if True:
+                    #try:
+                        dt = datetime.datetime.strptime(payload[key], '%m/%d/%Y %I:%M %p')
+                        payload[key] = dt
+                        print("decoded key '%s' as datetime: %s" % (key, str(dt)))
+                    #except:
+                    #    print('\t[INFO] date in incorrect format, aborting key.')
+                    #    bad_keys.append(key)
             elif '_id' in key:
                 payload[key] = payload[key].replace('-','')
     #except:
@@ -34,9 +47,10 @@ def get_payload(request):
     for bad_key in bad_keys:
         del payload[bad_key]
 
+    print('\t[INFO] result payload:\n')
     print(payload)
+    
     return payload
-
 
 def build_paging(request):
     start = 0

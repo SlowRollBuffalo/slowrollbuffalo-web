@@ -47,6 +47,10 @@ label {
 	width: 100% !important;
 }
 
+.hasWickedpicker {
+	width: 100% !important;	
+}
+
 #admin-nav {
 	margin: 0 !important;
 }

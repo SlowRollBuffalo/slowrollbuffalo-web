@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="static/css/site.css" />
     <link rel="stylesheet" href="static/css/reveal.css" />
 
+	<link rel="stylesheet" href="static/css/wickedpicker.css" />    
+
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
 
 </head>
@@ -104,8 +106,11 @@
 						<textarea id="new_edit-ride-description" ></textarea>
 						
 						<label>Ride Date</label>
-						<input id="new_edit-ride-ride_datetime" readonly></input>
-						
+						<input id="new_edit-ride-ride_datetime-date" readonly></input>
+
+						<label>Ride Time</label>
+						<input id="new_edit-ride-ride_datetime-time" readonly></input>
+
 						<label>Address</label>
 						<input id="new_edit-ride-address_0" type="text"></input>
 						<label>City</label>
@@ -228,6 +233,8 @@
     <script src="static/js/skel.min.js"></script>
     <script src="static/js/util.js"></script>
     <script src="static/js/main.js"></script>
+
+    <script src="static/js/wickedpicker.js"></script>
 
     <script src="static/js/jquery.reveal.js"></script>
     

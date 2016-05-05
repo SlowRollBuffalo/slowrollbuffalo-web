@@ -3,8 +3,8 @@ import requests
 import json
 import hashlib
 
-base_url = 'http://localhost:6577'
-#base_url = 'http://slowrollbuffalo.mycodespace.net'
+#base_url = 'http://localhost:6577'
+base_url = 'http://slowrollbuffalo.mycodespace.net'
 
 def build_url(model, token, _id=False):
     if _id:
@@ -17,6 +17,7 @@ def do_login(email, password):
         'email': email,
         'password': hashlib.sha256('password'.encode('utf-8')).hexdigest(), 
         'platform': 'testing',
+        'version': '1.0.0l',
     })
     resp = requests.post(base_url + '/api/users/login', data)
     print(resp.text)

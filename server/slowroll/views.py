@@ -232,6 +232,8 @@ class RegisterAPI(object):
         'last',
         'email',
         'password',
+        #'platform',
+        #'version',
     )
 
     def __init__(self, request):
@@ -250,7 +252,7 @@ class RegisterAPI(object):
             last = self.payload['last']
             email = self.payload['email']
             password = self.payload['password']
-            user = Users.create_new_user(first, last, email, password)
+            user = Users.create_new_user(first, last, email, password, )
             if user:
 
                 Users.update_by_id(
@@ -558,7 +560,7 @@ class PartnerAPI(object):
 @view_defaults(route_name='/api/rides', renderer='json')
 class RidesAPI(object):
 
-    req = ('title', 'description', 'address_0', 'address_1', 
+    req = ('title', 'description', 'ride_datetime', 'address_0', 'address_1', 
            'city', 'state', 'zipcode', 'sponsor_id')
 
     def __init__(self, request):
