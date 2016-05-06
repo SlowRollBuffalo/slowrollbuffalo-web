@@ -22,6 +22,7 @@ from sqlalchemy import (
     distinct,
     func,
     desc,
+    or_,
 )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -160,6 +161,8 @@ class Users(Base, TimeStampMixin, CreationMixin):
     validated = Column(Boolean, nullable=False)
     token = Column(UnicodeText, nullable=True)
     token_expire_datetime = Column(DateTime, nullable=True)
+    admin_token = Column(Boolean, nullable=True)
+    admin_token_expire_datetime = Column(DateTime, nullable=True)
     platform = Column(UnicodeText, nullable=False)
     version = Column(UnicodeText, nullable=False)
     last_login = Column(DateTime, nullable=True)
@@ -185,6 +188,8 @@ class Users(Base, TimeStampMixin, CreationMixin):
                 user.validated=False,
                 user.token=None,
                 user.token_expire_datetime=None,
+                user.admin_token=None,
+                user.admin_token_expire_datetime=None,
                 user.platform='',
                 user.version='',
                 user.temporary=False,
@@ -206,6 +211,8 @@ class Users(Base, TimeStampMixin, CreationMixin):
                 validated=False,
                 token=None,
                 token_expire_datetime=None,
+                admin_token=None,
+                admin_token_expire_datetime=None,
                 platform='',
                 version='',
                 temporary=temporary,
@@ -226,12 +233,16 @@ class Users(Base, TimeStampMixin, CreationMixin):
             )
         return user
 
+
     @classmethod
     def get_by_token(cls, token):
         user = DBSession.query(
             Users,
         ).filter(
-            Users.token == token,
+            or_(
+                Users.token == token,
+                Users.admin_token == token,
+            )
         ).first()
         return user
 
@@ -260,14 +271,25 @@ class Users(Base, TimeStampMixin, CreationMixin):
             pass_bytes = hashlib.sha256(password.encode('utf-8')).hexdigest()
             pass_val = pass_bytes + salt_bytes
             pass_hash = hashlib.sha256(pass_val.encode('utf-8')).hexdigest()
-            if (_user.pass_hash == pass_hash):
-                token = str(uuid4())
-                token_expire_datetime = datetime.datetime.now() + datetime.timedelta(hours=24*30)
-                user = Users.update_by_id(
-                    _user.id,
-                    token=token,
-                    token_expire_datetime=token_expire_datetime,
-                )
+            if _user.pass_hash == pass_hash:
+                if user.is_admin:
+                    # admin user
+                    admin_token = str(uuid4())
+                    admin_token_expire_datetime = datetime.datetime.now() + datetime.timedelta(hours=24*30)
+                    user = Users.update_by_id(
+                        _user.id,
+                        admin_token=admin_token,
+                        admin_token_expire_datetime=admin_token_expire_datetime,
+                    )
+                else:
+                    # regular user
+                    token = str(uuid4())
+                    token_expire_datetime = datetime.datetime.now() + datetime.timedelta(hours=24*30)
+                    user = Users.update_by_id(
+                        _user.id,
+                        token=token,
+                        token_expire_datetime=token_expire_datetime,
+                    )
         return user
 
 
