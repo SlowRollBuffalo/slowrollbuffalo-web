@@ -189,10 +189,10 @@ var app = {
 			var city = $('#new_edit-partner-city').val();
 			var state = $('#new_edit-partner-state').val();
 			var zipcode = $('#new_edit-partner-zipcode').val();
-			var fence_top_left_lat = 0;
-			var fence_top_left_lng = 0;
-			var fence_bottom_right_lat = 0;
-			var fence_bottom_right_lng = 0;
+			var fence_top_left_lat = null;
+			var fence_top_left_lng = null;
+			var fence_bottom_right_lat = null;
+			var fence_bottom_right_lng = null;
 
 			if ( app.geofence != undefined ) {
 				fence_top_left_lat = app.geofence.top_left_lat;
@@ -210,11 +210,15 @@ var app = {
 				'city': city,
 				'state': state,
 				'zipcode': zipcode,
-				'fence_top_left_lat': fence_top_left_lat,
-				'fence_top_left_lng': fence_top_left_lng,
-				'fence_bottom_right_lat': fence_bottom_right_lat,
-				'fence_bottom_right_lng': fence_bottom_right_lng
+				//'fence_top_left_lat': fence_top_left_lat,
+				//'fence_top_left_lng': fence_top_left_lng,
+				//'fence_bottom_right_lat': fence_bottom_right_lat,
+				//'fence_bottom_right_lng': fence_bottom_right_lng
 			};
+
+			if ( fence_bottom_right_lat == null ) {
+				alert('Be advised that with no gen fence defined for this partner, users will not get any notifications on their phone.  Edit this partner at any time to define a geo fence.');
+			}
 
 			var bad_input = false;
 			for( var key in data ) {
@@ -404,6 +408,8 @@ var app = {
 				if ( !app.models.rides.edit_mode )
 					$('#new_edit-ride-ride_datetime-time').val('06:30 PM');
 				$('#create-new_edit-partner').html('Create Ride!');
+				$('#new_edit-ride-city').val('Buffalo');
+				$('#new_edit-ride-state').val('NY');
 				$('#page-new_edit-ride').show();
 				app.populate_sponsors_list();
 				break;
@@ -554,6 +560,7 @@ var app = {
 	populate_sponsors_list: function(callback) {
 		var partners = app.models['partners'].collection;
 		var html = '';
+		html += '<option value="null"> - None - </option>';
 		for(var i=0;i<partners.length;i++) {
 			var partner = partners[i];
 			html += '<option value="'+ partner.id + '"">' + partner.name + '</option>';
@@ -1027,8 +1034,12 @@ var app = {
 				$('#new_edit-ride-zipcode').val(ride.zipcode);
 
 				app.populate_sponsors_list(function() {
-					console.log('app.models.rides.populate_edit_page(), populating sponsor list selection with id: ' + sponsor.id);
-					$('#new_edit-ride-sponsor_id').val(sponsor.id);
+					if ( sponsor != null && sponsor !== undefined ) {
+						console.log('app.models.rides.populate_edit_page(), populating sponsor list selection with id: ' + sponsor.id);
+						$('#new_edit-ride-sponsor_id').val(sponsor.id);
+					} else {
+						$('#new_edit-ride-sponsor_id').val(null);
+					}
 				});
 
 			},
@@ -1071,7 +1082,10 @@ var app = {
 								}
 								html += '<td>' + ride.ride_datetime + '</td>';
 								html += '<td>' + ride.address_0 + ', ' + ride.city + ' ' + ride.zipcode + '</td>';
-								html += '<td>' + sponsor.name + '</td>';
+								if ( sponsor != null && sponsor !== undefined )
+									html += '<td>' + sponsor.name + '</td>';
+								else
+									html += '<td> - None - </td>';
 								html += '<td>' + checkin_count + ' <a id="' + ride.id + '" class="ride-checkin-report-button"><i class="fa fa-question"></i></a></td>';
 								html += '<td>';
 								html += '    <a id="' + ride.id + '" class="edit-link edit-ride-link"><i class="fa fa-pencil"></i></a>';

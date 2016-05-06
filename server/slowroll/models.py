@@ -272,7 +272,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
             pass_val = pass_bytes + salt_bytes
             pass_hash = hashlib.sha256(pass_val.encode('utf-8')).hexdigest()
             if _user.pass_hash == pass_hash:
-                if user.is_admin:
+                if user and user.is_admin:
                     # admin user
                     admin_token = str(uuid4())
                     admin_token_expire_datetime = datetime.datetime.now() + datetime.timedelta(hours=24*30)
@@ -362,10 +362,10 @@ class Partners(Base, TimeStampMixin, CreationMixin):
     zipcode = Column(UnicodeText, nullable=False)
     #partner_level_id = Column(ForeignKey('partner_levels.id'), nullable=False)
     notification_text = Column(UnicodeText, nullable=False)
-    fence_top_left_lat = Column(Float, nullable=False)
-    fence_top_left_lng = Column(Float, nullable=False)
-    fence_bottom_right_lat = Column(Float, nullable=False)
-    fence_bottom_right_lng = Column(Float, nullable=False)
+    fence_top_left_lat = Column(Float, nullable=True)
+    fence_top_left_lng = Column(Float, nullable=True)
+    fence_bottom_right_lat = Column(Float, nullable=True)
+    fence_bottom_right_lng = Column(Float, nullable=True)
     #partner_level = Column(UnicodeText, nullable=False)
     
     def to_dict(self):
@@ -398,7 +398,7 @@ class Rides(Base, TimeStampMixin, CreationMixin):
     city = Column(UnicodeText, nullable=False)
     state = Column(UnicodeText, nullable=False)
     zipcode = Column(UnicodeText, nullable=False)
-    sponsor_id = Column(ForeignKey('partners.id'), nullable=False)
+    sponsor_id = Column(ForeignKey('partners.id'), nullable=True)
 
     # over ride to support partner/sponsor join
     @classmethod

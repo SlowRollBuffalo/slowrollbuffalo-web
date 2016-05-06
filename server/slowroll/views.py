@@ -34,10 +34,10 @@ class Index(object):
         rides = []
         _rides = Rides.get_paged(0, 10)
         if _rides:
-            for ride, sponsor, checkin_count in _rides:
+            for ride, partner, checkin_count in _rides:
                 rides.append({
                     'ride': ride.to_dict(),
-                    'sponsor': sponsor.to_dict(),
+                    'partner': partner.to_dict() if partner != None else None,
                     'checkin_count': checkin_count,
                 })
         return {'rides': rides}
@@ -127,15 +127,11 @@ class CheckinsPrintablePage(object):
         
     @view_config(request_method='GET', renderer='templates/checkins.mak')
     def get(self):
-        print('Chcekins.get()')
         if self.user and self.user.is_admin:
-            print('Chcekins.get(), authed.')
             if 'ride_id' in self.request.GET:
-                print('Chcekins.get(), valid data')
                 ride_id = self.request.GET['ride_id']
                 ride = Rides.get_by_id(ride_id)
                 checkins = Checkins.get_by_ride_id(ride_id)
-                print(ride)
                 return {
                     'ride': ride,
                     'checkins': checkins,
@@ -172,19 +168,13 @@ class UserLoginAPI(object):
     @view_config(request_method='POST')
     def post(self):
         resp = {}
-        #print('\n')
-        #print('UserLoginAPI.GET()')
-        print(self.payload)
         if self.payload and all(r in self.payload for r in self.post_req):
-            print('inside')
             email = self.payload['email']
             password = self.payload['password']
             user = Users.authenticate(email, password)
-            print(user)
             if user:
                 self.request.session['token'] = user.token
                 resp = user.to_dict()
-                print(resp)
                 Users.update_by_id(
                     user.id,
                     platform=self.payload['platform'],
@@ -295,20 +285,13 @@ class Legal(object):
 
     @view_config(request_method='GET')
     def get(self):
-        print('\n\nLEGAL NOTICE [GET]\n\n')
         legal_notice = Settings.get_setting_value('legal_notice')
         resp = {'legal_notice': legal_notice}
-        #print('\n\n')
-        #print(legal_notice)
-        #print('\n\n')
         return resp 
 
     #[ PUT ]
     @view_config(request_method='PUT')
     def put(self):
-        print('\n\nLEGAL NOTICE [PUT]')
-        print(self.payload)
-        print('\n\n')
         resp = {}
         if self.user and self.user.is_admin:
             legal_notice_setting = Settings.get_by_name('legal_notice')
@@ -424,10 +407,6 @@ class UserAPI(object):
     def get(self):
         resp = {}
         if self.user and self.user.is_admin:
-            print('\n\n')
-            print(self.payload)
-            print(self.req)
-            print('\n\n')
             if self.payload and all(r in self.payload for r in self.req):
                 _id = self.request.matchdict['id'].replace('-','')
                 user = Users.update_by_id(
@@ -452,9 +431,9 @@ class UserAPI(object):
 class PartnersAPI(object):
 
     req = ('name', 'description', 'address_0', 'address_1', 'city',
-           'state', 'zipcode', 'notification_text',
-           'fence_top_left_lat', 'fence_top_left_lng', 
-           'fence_bottom_right_lat', 'fence_bottom_right_lng')
+           'state', 'zipcode', 'notification_text', )
+           #'fence_top_left_lat', 'fence_top_left_lng', 
+           #'fence_bottom_right_lat', 'fence_bottom_right_lng')
 
     def __init__(self, request):
         self.request = build_request(request)
@@ -466,9 +445,6 @@ class PartnersAPI(object):
     @view_config(request_method='GET')
     def get(self):
         resp = []
-        print('\n')
-        print('PartnersAPI.GET()')
-        print(self.payload)
         if self.user:
             partners = Partners.get_all()
             if partners:
@@ -484,9 +460,6 @@ class PartnersAPI(object):
     @view_config(request_method='POST')
     def post(self):
         resp = {}
-        print('\n')
-        print('PartnersAPI.POST()')
-        print(self.payload)
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
                 partner = Partners.add(**self.payload)
@@ -506,9 +479,9 @@ class PartnersAPI(object):
 class PartnerAPI(object):
 
     req = ('name', 'description', 'address_0', 'address_1', 'city',
-           'state', 'zipcode', 'notification_text',
-           'fence_top_left_lat', 'fence_top_left_lng',
-           'fence_bottom_right_lat', 'fence_bottom_right_lng', )
+           'state', 'zipcode', 'notification_text', )
+           #'fence_top_left_lat', 'fence_top_left_lng',
+           #'fence_bottom_right_lat', 'fence_bottom_right_lng', )
 
     def __init__(self, request):
         self.request = request
@@ -519,14 +492,10 @@ class PartnerAPI(object):
     # [ GET ]
     @view_config(request_method='GET')
     def get(self):
-        print('\n\n/api/partners/{id} [GET]')
         resp = {}
         if self.user and self.user.is_admin:
             _id = self.request.matchdict['id'].replace('-','')
-            print('id: ' + _id)
             partner = Partners.get_by_id(_id)
-            print('partner:')
-            print(partner)
             if partner:
                 resp = partners.to_dict()
             else:
@@ -540,8 +509,6 @@ class PartnerAPI(object):
     def post(self):
         resp = {}
         if self.user and self.user.is_admin:
-            print(json.dumps(self.req, indent=4))
-            print(json.dumps(self.payload, indent=4))
             if self.payload and all(r in self.payload for r in self.req):
                 _id = self.request.matchdict['id'].replace('-','')
                 partner = Partners.update_by_id(_id, **self.payload)
@@ -561,7 +528,7 @@ class PartnerAPI(object):
 class RidesAPI(object):
 
     req = ('title', 'description', 'ride_datetime', 'address_0', 'address_1', 
-           'city', 'state', 'zipcode', 'sponsor_id')
+           'city', 'state', 'zipcode', )
 
     def __init__(self, request):
         self.request = build_request(request)
@@ -577,10 +544,10 @@ class RidesAPI(object):
             _rides = Rides.get_paged(self.start, self.count)
             if _rides:
                 resp = []
-                for ride, sponsor, count in _rides:
+                for ride, partner, count in _rides:
                     resp.append({
                         'ride': ride.to_dict(),
-                        'sponsor': sponsor.to_dict(),
+                        'partner': partner.to_dict() if partner != None else None,
                         'checkin_count': count,
                     })
             #else:
@@ -612,7 +579,7 @@ class RidesAPI(object):
 class RideAPI(object):
 
     req = ('title', 'description', 'address_0', 'address_1', 
-           'city', 'state', 'zipcode', 'sponsor_id')
+           'city', 'state', 'zipcode', )
 
     def __init__(self, request):
         self.request = request
@@ -711,16 +678,9 @@ class CheckinsAPI(object):
     # [ POST ]
     @view_config(request_method='POST')
     def post(self):
-        print('checkins.POST()')
         resp = {}
         if self.user:
-            print('\n\nCheckinsAPI [POST]\n\n')
-            print('if self.user:')
-            print(self.payload)
-            print(self.req)
-            print('\n----\n')
             if self.payload and all(r in self.payload for r in self.req):
-                print('if self.payload and all(r in self.payload for r in self.req):')
                 self.payload.update(
                     user_id=self.user.id,
                     platform='api',

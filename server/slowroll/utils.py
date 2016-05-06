@@ -39,7 +39,7 @@ def get_payload(request):
                     #except:
                     #    print('\t[INFO] date in incorrect format, aborting key.')
                     #    bad_keys.append(key)
-            elif '_id' in key:
+            elif '_id' in key and payload[key] != None:
                 payload[key] = payload[key].replace('-','')
     #except:
     #    payload = None

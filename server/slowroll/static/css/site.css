@@ -93,6 +93,7 @@ label {
 .page-nav-link-wrapper {
 	padding-left: 2rem;
   	padding-right: 2rem;
+  	padding-top: 1rem;
   	display: inline-block;
 }
 
