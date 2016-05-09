@@ -95,8 +95,8 @@
 				app.logout(
 					function() {
 					window.location = '/login';
-				},
-				function() {}
+					},
+					function() {}
 				);
 			}
 

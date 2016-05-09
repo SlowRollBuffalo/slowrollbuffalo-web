@@ -168,16 +168,26 @@ class UserLoginAPI(object):
     #[ POST ] - perform login
     @view_config(request_method='POST')
     def post(self):
+
+        print('\napi/users/login [POST]')
+        print('GET:')
+        print(self.request.GET)
+        print('\n')
+
+
         resp = {}
         if self.payload and all(r in self.payload for r in self.post_req):
             admin = False
-            if 'admin' in self.request.GET and self.request.GET['admin'] == 1:
+            if 'admin' in self.request.GET and self.request.GET['admin'] == '1':
                 admin = True
             email = self.payload['email']
             password = self.payload['password']
             user = Users.authenticate(email, password, admin)
             if user:
-                self.request.session['token'] = user.token
+                if admin:
+                    self.request.session['token'] = user.admin_token
+                else:
+                    self.request.session['token'] = user.token
                 resp = user.to_dict()
                 Users.update_by_id(
                     user.id,

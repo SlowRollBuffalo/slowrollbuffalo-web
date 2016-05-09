@@ -161,7 +161,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
     validated = Column(Boolean, nullable=False)
     token = Column(UnicodeText, nullable=True)
     token_expire_datetime = Column(DateTime, nullable=True)
-    admin_token = Column(Boolean, nullable=True)
+    admin_token = Column(UnicodeText, nullable=True)
     admin_token_expire_datetime = Column(DateTime, nullable=True)
     platform = Column(UnicodeText, nullable=False)
     version = Column(UnicodeText, nullable=False)
@@ -272,7 +272,18 @@ class Users(Base, TimeStampMixin, CreationMixin):
             pass_val = pass_bytes + salt_bytes
             pass_hash = hashlib.sha256(pass_val.encode('utf-8')).hexdigest()
             if _user.pass_hash == pass_hash:
-                if user and user.is_admin and admin:
+
+                print('\nuser:')
+                print(_user)
+                print('user.is_admin')
+                print(_user.is_admin)
+                print('admin:')
+                print(admin)
+
+                if _user and _user.is_admin and admin:
+
+                    print('\n\nADMIN LOGIN\n\n')
+
                     # admin user, from thr web
                     admin_token = str(uuid4())
                     admin_token_expire_datetime = datetime.datetime.now() + datetime.timedelta(hours=24*30)
@@ -283,6 +294,9 @@ class Users(Base, TimeStampMixin, CreationMixin):
                     )
                 else:
                     # regular user, or admin from the app
+
+                    print('\n\nNORMAL USER LOGIN\n\n')
+
                     token = str(uuid4())
                     token_expire_datetime = datetime.datetime.now() + datetime.timedelta(hours=24*30)
                     user = Users.update_by_id(
@@ -304,14 +318,21 @@ class Users(Base, TimeStampMixin, CreationMixin):
 
 
     @classmethod
-    def invalidate_token(cls, token):
+    def invalidate_token(cls, token, admin=False):
         user = Users.get_by_token(token)
         if user != None:
-            user = Users.update_by_id(
-                user.id,
-                token=None,
-                token_expire_datetime=None,
-            )
+            if admin:
+                user = Users.update_by_id(
+                    user.id,
+                    admin_token=None,
+                    admin_token_expire_datetime=None,
+                )
+            else:
+                user = Users.update_by_id(
+                    user.id,
+                    token=None,
+                    token_expire_datetime=None,
+                )
         return user
 
 
@@ -324,6 +345,8 @@ class Users(Base, TimeStampMixin, CreationMixin):
             email=self.email, 
             token=self.token,
             token_expire_datetime=str(self.token_expire_datetime),
+            admin_token=self.admin_token if self.is_admin else None,
+            admin_token_expire_datetime=str(self.admin_token_expire_datetime) if self.is_admin else None,
             platform=self.platform,
             last_login=str(self.last_login),
         )

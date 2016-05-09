@@ -120,7 +120,7 @@ var app = {
 								// missing information
 							}
 
-							//window.location = '/login';
+							//app.error_redrect();
 						}
 					);
 
@@ -143,7 +143,7 @@ var app = {
 								// missing information
 							}
 
-							//window.location = '/login';
+							//app.error_redrect();
 						}
 					);
 
@@ -265,7 +265,7 @@ var app = {
 								// missing information
 							}
 
-							//window.location = '/login';
+							//app.error_redrect();
 						}
 					);
 
@@ -288,7 +288,7 @@ var app = {
 								// missing information
 							}
 
-							//window.location = '/login';
+							//app.error_redrect();
 						}
 					);
 
@@ -344,7 +344,7 @@ var app = {
                 platform: 'web',
                 version: '1.0.0.',
             }),
-            success: function(resp) {success(resp); },
+            success: function(resp) { success(resp); },
             error: function(resp) { failure(resp); }
         });
     },
@@ -364,13 +364,18 @@ var app = {
     		type: 'GET',
     		success: function(resp) {
     			if ( resp.loggedin == false ) {
-    				window.location = '/login';
+    				app.error_redrect();
     			}
     		},
     		error: function(resp) {
-    			window.location = '/login';
+    			app.error_redrect();
     		}
     	});
+    },
+
+    error_redrect: function() {
+    	console.log('app.error_redrect()');
+    	window.location = '/login';
     },
 
 	display_page: function(page) {
@@ -433,12 +438,12 @@ var app = {
 				break;
 			case 'logout':
 				app.logout(
-					function() { window.location = '/login' },
-				 	function() { window.location = '/login' }
+					function() { app.error_redrect(); },
+				 	function() { app.error_redrect(); }
 				);
 				break;
 			default:
-				//window.location = '/login';
+				//app.error_redrect();
 				break;
 		};
 	
@@ -783,7 +788,7 @@ var app = {
 							callback();
 
 					},
-					function(resp) { /* window.location = '/login'; */ }
+					function(resp) { /* app.error_redrect(); */ }
 				);
 			},
 
@@ -964,7 +969,7 @@ var app = {
 							callback();
 
 					},
-					function(resp) { /* window.location = '/login'; */ }
+					function(resp) { /* app.error_redrect(); */ }
 				);
 			}
 
@@ -1159,7 +1164,7 @@ var app = {
 						if ( callback != undefined )
 							callback();
 					},
-					function(resp) { /* window.location = '/login'; */ }
+					function(resp) { /* app.error_redrect(); */ }
 				);
 
 			},
@@ -1226,7 +1231,7 @@ var app = {
 						$('#ride-checkins-list').html(html);
 					},
 					error: function(resp) {
-						//window.location = '/login';
+						//app.error_redrect();
 					}
 				});
 
