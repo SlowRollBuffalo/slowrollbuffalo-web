@@ -170,9 +170,12 @@ class UserLoginAPI(object):
     def post(self):
         resp = {}
         if self.payload and all(r in self.payload for r in self.post_req):
+            admin = False
+            if 'admin' in self.request.GET and self.request.GET['admin'] == 1:
+                admin = True
             email = self.payload['email']
             password = self.payload['password']
-            user = Users.authenticate(email, password)
+            user = Users.authenticate(email, password, admin)
             if user:
                 self.request.session['token'] = user.token
                 resp = user.to_dict()

@@ -258,7 +258,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
 
 
     @classmethod
-    def authenticate(cls, email, password):
+    def authenticate(cls, email, password, admin=False):
         _user = Users.get_by_email(email)
         user = None
         if _user is not None:
@@ -272,8 +272,8 @@ class Users(Base, TimeStampMixin, CreationMixin):
             pass_val = pass_bytes + salt_bytes
             pass_hash = hashlib.sha256(pass_val.encode('utf-8')).hexdigest()
             if _user.pass_hash == pass_hash:
-                if user and user.is_admin:
-                    # admin user
+                if user and user.is_admin and admin:
+                    # admin user, from thr web
                     admin_token = str(uuid4())
                     admin_token_expire_datetime = datetime.datetime.now() + datetime.timedelta(hours=24*30)
                     user = Users.update_by_id(
@@ -282,7 +282,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
                         admin_token_expire_datetime=admin_token_expire_datetime,
                     )
                 else:
-                    # regular user
+                    # regular user, or admin from the app
                     token = str(uuid4())
                     token_expire_datetime = datetime.datetime.now() + datetime.timedelta(hours=24*30)
                     user = Users.update_by_id(

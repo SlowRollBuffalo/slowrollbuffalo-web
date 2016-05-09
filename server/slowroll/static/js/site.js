@@ -336,7 +336,7 @@ var app = {
 
 	login: function(email, password, success, failure) {
         $.ajax({
-            url: '/api/users/login',
+            url: '/api/users/login?admin=1',
             type: 'POST',
             data: JSON.stringify({
                 email: email,
@@ -351,7 +351,7 @@ var app = {
 
     logout: function(success, failure) {
         $.ajax({
-            url: '/api/users/logout',
+            url: '/api/users/logout?admin=1',
             type: 'POST',
             success: function(resp) { success(resp); },
             error: function(resp) { failure(resp); }
