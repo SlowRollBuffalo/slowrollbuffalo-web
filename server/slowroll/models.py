@@ -402,7 +402,7 @@ class Rides(Base, TimeStampMixin, CreationMixin):
 
     # over ride to support partner/sponsor join
     @classmethod
-    def get_paged(cls, start, count):
+    def get_paged(cls, user_id, start, count):
         rides = DBSession.query(
             Rides,
             Partners,
@@ -411,6 +411,12 @@ class Rides(Base, TimeStampMixin, CreationMixin):
             ).filter(
                 Checkins.ride_id == Rides.id,
             ).label('checkin_count'),
+            DBSession.query(
+                func.count(distinct(Checkins.id)),
+            ).filter(
+                Checkins.ride_id == Rides.id,
+                Checkins.user_id == user_id,
+            ).label('checked_in'),
         ).filter(
             #cls.deleted == False,
         ).outerjoin(

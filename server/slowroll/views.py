@@ -32,13 +32,14 @@ class Index(object):
     @view_config(request_method='GET', renderer='templates/index.mak')
     def get(self):
         rides = []
-        _rides = Rides.get_paged(0, 10)
+        _rides = Rides.get_paged('00000000-0000-0000-0000-000000000000', 0, 10)
         if _rides:
-            for ride, partner, checkin_count in _rides:
+            for ride, partner, checkin_count, checked_in in _rides:
                 rides.append({
                     'ride': ride.to_dict(),
                     'partner': partner.to_dict() if partner != None else None,
                     'checkin_count': checkin_count,
+                    'checked_in': checked_in,
                 })
         return {'rides': rides}
 
@@ -541,14 +542,15 @@ class RidesAPI(object):
     def get(self):
         resp = []
         if self.user:
-            _rides = Rides.get_paged(self.start, self.count)
+            _rides = Rides.get_paged(self.user.id, self.start, self.count)
             if _rides:
                 resp = []
-                for ride, partner, count in _rides:
+                for ride, partner, count, checked_in in _rides:
                     resp.append({
                         'ride': ride.to_dict(),
                         'partner': partner.to_dict() if partner != None else None,
                         'checkin_count': count,
+                        'checked_in': checked_in,
                     })
             #else:
             #    self.request.response.status = 404
