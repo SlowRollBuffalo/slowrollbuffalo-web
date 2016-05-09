@@ -421,9 +421,9 @@ class Rides(Base, TimeStampMixin, CreationMixin):
     city = Column(UnicodeText, nullable=False)
     state = Column(UnicodeText, nullable=False)
     zipcode = Column(UnicodeText, nullable=False)
-    sponsor_id = Column(ForeignKey('partners.id'), nullable=True)
+    partner_id = Column(ForeignKey('partners.id'), nullable=True)
 
-    # over ride to support partner/sponsor join
+    # over ride to support partner/partner join
     @classmethod
     def get_paged(cls, user_id, start, count):
         rides = DBSession.query(
@@ -443,7 +443,7 @@ class Rides(Base, TimeStampMixin, CreationMixin):
         ).filter(
             #cls.deleted == False,
         ).outerjoin(
-            Partners, Partners.id == Rides.sponsor_id,
+            Partners, Partners.id == Rides.partner_id,
         ).order_by(
             desc(
                 Rides.ride_datetime,
@@ -462,6 +462,7 @@ class Rides(Base, TimeStampMixin, CreationMixin):
             city=self.city,
             state=self.state,
             zipcode=self.zipcode,
+            partner_id=str(self.partner_id),
         )
         return resp
 

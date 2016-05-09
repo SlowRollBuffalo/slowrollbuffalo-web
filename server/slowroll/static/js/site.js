@@ -34,7 +34,7 @@ var app = {
 		// connect creating a new ride modal
 		$('#open-new_edit-ride-page').on('click', function() {
 			/*
-			app.populate_sponsors_list();
+			app.populate_partners_list();
 			$('#modal-new_edit-ride').reveal({
     			animation: 'fadeAndPop',
     			animationspeed: 250,
@@ -67,7 +67,7 @@ var app = {
 			var city = $('#new_edit-ride-city').val();
 			var state = $('#new_edit-ride-state').val();
 			var zipcode = $('#new_edit-ride-zipcode').val();
-			var sponsor_id = $('#new_edit-ride-sponsor_id').val();
+			var partner_id = $('#new_edit-ride-partner_id').val();
 
 			var data = {
 				'title': title,
@@ -78,7 +78,7 @@ var app = {
 				'city': city,
 				'state': state,
 				'zipcode': zipcode,
-				'sponsor_id': sponsor_id,
+				'partner_id': partner_id,
 				'deleted': false
 			};
 
@@ -393,7 +393,7 @@ var app = {
 		$('#new_edit-ride-city').val('');
 		$('#new_edit-ride-state').val('');
 		$('#new_edit-ride-zipcode').val('');
-		$('#new_edit-ride-sponsor_id').val('');
+		$('#new_edit-ride-partner_id').val('');
 
 		$('#new_edit-partner-name').val('');
 		$('#new_edit-partner-description').val('');
@@ -416,7 +416,7 @@ var app = {
 				$('#new_edit-ride-city').val('Buffalo');
 				$('#new_edit-ride-state').val('NY');
 				$('#page-new_edit-ride').show();
-				app.populate_sponsors_list();
+				app.populate_partners_list();
 				break;
 			case 'partners':
 				$('#page-partners').show();
@@ -425,7 +425,7 @@ var app = {
 			case 'new_edit-partner':
 				$('#create-new_edit-partner').html('Create Partner!');
 				$('#page-new_edit-partner').show();
-				//app.populate_sponsors_list();
+				//app.populate_partners_list();
 				//app.models['rides'].refresh();
 				break;
 			case 'users':
@@ -562,7 +562,7 @@ var app = {
 
 	},
 
-	populate_sponsors_list: function(callback) {
+	populate_partners_list: function(callback) {
 		var partners = app.models['partners'].collection;
 		var html = '';
 		html += '<option value="null"> - None - </option>';
@@ -570,7 +570,7 @@ var app = {
 			var partner = partners[i];
 			html += '<option value="'+ partner.id + '"">' + partner.name + '</option>';
 		}
-		$('#new_edit-ride-sponsor_id').html(html);
+		$('#new_edit-ride-partner_id').html(html);
 
 		if ( callback != undefined ) {
 			callback();
@@ -764,7 +764,7 @@ var app = {
 								html += '<td>' + user.first + ' ' + user.last + '</td>';
 								html += '<td>' + user.last_login.split('.')[0] + '</td>';
 								html += '<td>' + user.platform + '</td>';
-								//html += '<td>' + sponsor.name + '</td>';
+								//html += '<td>' + partner.name + '</td>';
 								html += '<td>';
 								//html += '    <a id="edit-user-' + user.id + '" class="edit-link"><i class="fa fa-pencil"></i></a>';
 								//html += '    <a id="cancel-user-' + user.id + '"><i class="fa fa-trash"></i></a>';
@@ -909,7 +909,7 @@ var app = {
 								html += '<td>' + partner.name + '</td>';
 								html += '<td>' + partner.description + '</td>';
 								html += '<td>' + partner.address_0 + ', ' + partner.city + ' ' + partner.zipcode + '</td>';
-								//html += '<td>' + sponsor.name + '</td>';
+								//html += '<td>' + partner.name + '</td>';
 								html += '<td>';
 								html += '    <a id="' + partner.id + '" class="edit-parter-link edit-link"><i class="fa fa-pencil"></i></a>';
 								html += '    <a id="' + partner.id + '" class="delete-partner-link"><i class="fa fa-trash"></i></a>';
@@ -1014,11 +1014,11 @@ var app = {
 				$('#create-new_edit-ride').html('Update Ride');
 
 				var ride = app.models.rides.single.ride;
-				var sponsor = app.models.rides.single.sponsor;
+				var partner = app.models.rides.single.partner;
 				var checkin_count = app.models.rides.single.checkin_count;
 
 				console.log('ride: ', ride);
-				console.log('sponsor: ', sponsor);
+				console.log('partner: ', partner);
 				console.log('checkin_count: ', checkin_count);
 
 				var date = ride.ride_datetime.split(' ')[0]; // YYYY-MM-DD
@@ -1038,12 +1038,12 @@ var app = {
 				$('#new_edit-ride-state').val(ride.state);
 				$('#new_edit-ride-zipcode').val(ride.zipcode);
 
-				app.populate_sponsors_list(function() {
-					if ( sponsor != null && sponsor !== undefined ) {
-						console.log('app.models.rides.populate_edit_page(), populating sponsor list selection with id: ' + sponsor.id);
-						$('#new_edit-ride-sponsor_id').val(sponsor.id);
+				app.populate_partners_list(function() {
+					if ( partner != null && partner !== undefined ) {
+						console.log('app.models.rides.populate_edit_page(), populating partner list selection with id: ' + partner.id);
+						$('#new_edit-ride-partner_id').val(partner.id);
 					} else {
-						$('#new_edit-ride-sponsor_id').val(null);
+						$('#new_edit-ride-partner_id').val(null);
 					}
 				});
 
@@ -1077,7 +1077,7 @@ var app = {
 							html += '<tbody>';
 							for(var i=0; i<rides.length; i++) {
 								var ride = rides[i].ride;
-								var sponsor = rides[i].sponsor;
+								var partner = rides[i].partner;
 								var checkin_count = rides[i].checkin_count;
 								var now = new Date();
 								if ( ride.ride_datetime.split(' ')[0] == now.yyyymmdd() ) {
@@ -1087,8 +1087,8 @@ var app = {
 								}
 								html += '<td>' + ride.ride_datetime + '</td>';
 								html += '<td>' + ride.address_0 + ', ' + ride.city + ' ' + ride.zipcode + '</td>';
-								if ( sponsor != null && sponsor !== undefined )
-									html += '<td>' + sponsor.name + '</td>';
+								if ( partner != null && partner !== undefined )
+									html += '<td>' + partner.name + '</td>';
 								else
 									html += '<td> - None - </td>';
 								html += '<td>' + checkin_count + ' <a id="' + ride.id + '" class="ride-checkin-report-button"><i class="fa fa-question"></i></a></td>';
@@ -1185,7 +1185,7 @@ var app = {
 
 			refresh: function(_ride) {
 				var ride = _ride.ride;
-				var sponsor = _ride.sponsor;
+				var partner = _ride.partner;
 				var checkin_count = _ride.checkin_count;
 				$.ajax({
 					url: '/api/checkins?ride_id=' + ride.id,

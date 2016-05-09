@@ -418,7 +418,7 @@ class UserAPI(object):
 
     #[ PUT ]
     @view_config(request_method='PUT')
-    def get(self):
+    def put(self):
         resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
@@ -520,7 +520,7 @@ class PartnerAPI(object):
 
     # [ PUT ]
     @view_config(request_method='PUT')
-    def post(self):
+    def put(self):
         resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
@@ -619,7 +619,7 @@ class RideAPI(object):
 
     # [ PUT ]
     @view_config(request_method='PUT')
-    def post(self):
+    def put(self):
         resp = {}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):
@@ -627,8 +627,12 @@ class RideAPI(object):
                 ride = Rides.update_by_id(_id, **self.payload)
                 if ride:
                     resp = ride.to_dict()
+                    print('\n\n')
+                    print(ride.to_dict())
+                    print('\n\n')
                 else:
                     # nothing good ...
+                    raise Exception('BUD ID in /api/rides/{id} [PUT]')
                     pass
             else:
                 self.request.response.status = 400
@@ -638,7 +642,7 @@ class RideAPI(object):
 
     # [ DELETE ]
     @view_config(request_method='DELETE')
-    def post(self):
+    def delete(self):
         resp = {}
         if self.user and self.user.is_admin:
             _id = self.request.matchdict['id'].replace('-','')
@@ -741,7 +745,7 @@ class CheckinAPI(object):
 
     # [ PUT ]
     @view_config(request_method='PUT')
-    def post(self):
+    def put(self):
         resp = {'checkin': None}
         if self.user and self.user.is_admin:
             if self.payload and all(r in self.payload for r in self.req):

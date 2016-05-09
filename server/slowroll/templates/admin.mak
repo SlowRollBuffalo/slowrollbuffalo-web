@@ -120,7 +120,7 @@
 						<label>Zipcode</label>
 						<input id="new_edit-ride-zipcode" type="text"></input>
 						<label>Ride Sponsor</label>
-						<select id="new_edit-ride-sponsor_id"></select>
+						<select id="new_edit-ride-partner_id"></select>
 						</br>
 						<button id="cancel-new_edit-ride" class="right cancel-button modal-new_edit-ride-cancel">Cancel</button>
 						<button id="create-new_edit-ride" class="left create-button">Create Ride!</button>
