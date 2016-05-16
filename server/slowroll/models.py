@@ -168,6 +168,8 @@ class Users(Base, TimeStampMixin, CreationMixin):
     last_login = Column(DateTime, nullable=True)
     temporary = Column(Boolean, nullable=False)
 
+    google_registration_id = Column(UnicodeText, nullable=True)
+
     @classmethod
     def create_new_user(cls, first, last, email, password, is_admin=False, temporary=False):
         
@@ -216,6 +218,7 @@ class Users(Base, TimeStampMixin, CreationMixin):
                 platform='',
                 version='',
                 temporary=temporary,
+                google_registration_id=None,
             )
         return user
 

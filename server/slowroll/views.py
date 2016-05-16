@@ -399,6 +399,7 @@ class UsersAPI(object):
             self.request.response.status = 403
         return resp
 
+
 @view_defaults(route_name='/api/users/{id}', renderer='json')
 class UserAPI(object):
 
@@ -440,6 +441,43 @@ class UserAPI(object):
         else:
             self.request.response.status = 403
         return resp
+
+
+@view_defaults(route_name='/api/users/{id}/push_registration', renderer='json')
+class UserAPI(object):
+
+    req = {
+        'google_registration_id',
+    }
+
+    def __init__(self, request):
+        self.request = build_request(request)
+        #self.start, self.count = build_paging(request)
+        self.user = authenticate(request)
+        self.payload = get_payload(request)
+
+    #[ PUT ]
+    @view_config(request_method='PUT')
+    def put(self):
+        resp = {}
+        if self.user:
+            if self.payload and all(r in self.payload for r in self.req):
+                _id = self.request.matchdict['id'].replace('-','')
+                user = Users.update_by_id(
+                    _id,
+                    google_registration_id=self.payload['google_registration_id'],
+                )
+                if user:
+                    resp = user.to_dict()
+                else:
+                    # nothing good ...
+                    pass
+            else:
+                self.request.response.status = 400
+        else:
+            self.request.response.status = 403
+        return resp
+
 
 @view_defaults(route_name='/api/partners', renderer='json')
 class PartnersAPI(object):
