@@ -444,7 +444,7 @@ class UserAPI(object):
 
 
 @view_defaults(route_name='/api/users/{id}/push_registration', renderer='json')
-class UserAPI(object):
+class UserPushRegistrationAPI(object):
 
     req = {
         'google_registration_id',
@@ -459,6 +459,7 @@ class UserAPI(object):
     #[ PUT ]
     @view_config(request_method='PUT')
     def put(self):
+        print('\n[INFO] /api/users/{id}/push_registration\n')
         resp = {}
         if self.user:
             if self.payload and all(r in self.payload for r in self.req):

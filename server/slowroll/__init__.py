@@ -66,8 +66,8 @@ def main(global_config, **settings):
     config.add_route('/api/users/legal', '/api/users/legal')
 
     config.add_route('/api/users', '/api/users')
-    config.add_route('/api/users/{id}', '/api/users/{id}')
     config.add_route('/api/users/{id}/push_registration', '/api/users/{id}/push_registration')
+    config.add_route('/api/users/{id}', '/api/users/{id}')
 
     config.add_route('/api/partner_levels', '/api/partner_levels')
     config.add_route('/api/partner_levels/{id}', '/api/partner_levels/{id}')

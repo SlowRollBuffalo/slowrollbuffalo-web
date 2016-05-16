@@ -12,8 +12,9 @@ upload_dir = './uploads'
 def get_payload(request):
     bad_keys = []
     #try:
-    print('\t[INFO] raw payload:\n')
+    print('\n[INFO] raw payload:\n')
     print(request.body)
+    print('\n')
     
     if True:
         try:
